@@ -1,38 +1,21 @@
-import { createServer } from "node:http";
-import { Server } from "socket.io";
+// server.ts
+import { Server } from 'socket.io';
+import http from 'http';
+import app from './app';
 
-export type MatchUpdate = {
-  matchId: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  minute: number;
-  status: "scheduled" | "live" | "finished";
-};
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: '*' } });
 
-const httpServer = createServer();
-const io = new Server(httpServer, {
-  cors: { origin: process.env.CLIENT_ORIGIN || "http://localhost:3000" },
-});
-const matches = new Map<string, MatchUpdate>();
+// Simulate Live Odds Update (Every 5 seconds)
+setInterval(() => {
+    const randomMatchId = Math.floor(Math.random() * 100) + 1;
+    const newOdds = {
+        home: (1.5 + Math.random()).toFixed(2),
+        draw: (3.0 + Math.random()).toFixed(2),
+        away: (2.0 + Math.random()).toFixed(2)
+    };
 
-io.on("connection", (socket) => {
-  socket.on("match:join", (matchId: unknown) => {
-    if (typeof matchId !== "string" || !/^[a-zA-Z0-9_-]{1,60}$/.test(matchId)) return;
-    socket.join(`match:${matchId}`);
-    const current = matches.get(matchId);
-    if (current) socket.emit("match:update", current);
-  });
-});
+    io.emit('odds_update', { matchId: randomMatchId, odds: newOdds });
+}, 5000);
 
-// Call from trusted server-side scoring logic. Do not accept anonymous score writes.
-export function publishMatchUpdate(update: MatchUpdate) {
-  matches.set(update.matchId, update);
-  io.to(`match:${update.matchId}`).emit("match:update", update);
-}
-
-export function startLiveScoreServer(port = Number(process.env.PORT || 4000)) {
-  httpServer.listen(port, () => console.log(`Live football scores on port ${port}`));
-}
-if (require.main === module) startLiveScoreServer();
+server.listen(3000, () => console.log('Server running on 3000'));
