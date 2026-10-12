@@ -1,51 +1,55 @@
-"use client";
-import { useEffect, useState } from "react";
-import { io, type Socket } from "socket.io-client";
+interface Bet {
+  id: string;
+  selection: string;
+  odds: number;
+  stake: number;
+}
 
-// Local football match score sheet (no betting or money transactions).
-export type MatchUpdate = {
-  matchId: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  minute: number;
-  status: "scheduled" | "live" | "finished";
-};
-
-export default function BetSlip({
-  serverUrl,
-  matchId,
-}: {
-  serverUrl: string;
-  matchId: string;
-}) {
-  const [match, setMatch] = useState<MatchUpdate | null>(null);
-  const [connected, setConnected] = useState(false);
-
-  useEffect(() => {
-    const socket: Socket = io(serverUrl, { reconnection: true });
-    socket.on("connect", () => {
-      setConnected(true);
-      socket.emit("match:join", matchId);
-    });
-    socket.on("disconnect", () => setConnected(false));
-    socket.on("match:update", (next: MatchUpdate) => {
-      if (next.matchId === matchId) setMatch(next);
-    });
-    return () => { socket.disconnect(); };
-  }, [serverUrl, matchId]);
+const BetSlip = ({ bets, updateStake, removeBet, placeBet }: any) => {
+  const totalStake = bets.reduce((sum, bet) => sum + bet.stake, 0);
+  const totalPotential = bets.reduce((sum, bet) => sum + (bet.stake * bet.odds), 0);
 
   return (
-    <section aria-label="Football match score sheet">
-      <h2>Football Match Score Sheet</h2>
-      <p role="status">{connected ? "Live connection" : "Reconnecting…"}</p>
-      {match ? (
+    <div className="fixed bottom-0 right-0 left-0 bg-[#1e1e1e] border-t border-gray-800 p-4 z-50 max-h-[50vh] overflow-y-auto md:static md:w-80 md:h-full">
+      <h3 className="text-white font-bold mb-2">Bet Slip ({bets.length})</h3>
+      
+      {bets.length === 0 ? (
+        <p className="text-gray-500 text-sm">Select odds to add to bet slip</p>
+      ) : (
         <>
-          <strong>{match.homeTeam} {match.homeScore} – {match.awayScore} {match.awayTeam}</strong>
-          <p>{match.status === "live" ? `Minute ${match.minute}` : match.status}</p>
+          {bets.map((bet: Bet) => (
+            <div key={bet.id} className="flex justify-between items-center border-b border-gray-800 py-2">
+              <div>
+                <p className="text-white text-sm">{bet.selection}</p>
+                <p className="text-green-400 text-xs">@{bet.odds.toFixed(2)}</p>
+              </div>
+              <input
+                type="number"
+                value={bet.stake}
+                onChange={(e) => updateStake(bet.id, parseFloat(e.target.value))}
+                className="w-20 bg-gray-800 text-white p-1 rounded text-right border border-gray-700"
+                placeholder="0.00"
+              />
+              <button onClick={() => removeBet(bet.id)} className="text-red-500 ml-2">✖</button>
+            </div>
+          ))}
+          
+          <div className="mt-4 flex justify-between text-white text-sm">
+            <span>Total Stake: ৳{totalStake.toFixed(2)}</span>
+            <span>Potential Win: ৳{totalPotential.toFixed(2)}</span>
+          </div>
+          
+          <button 
+            onClick={placeBet}
+            disabled={totalStake <= 0}
+            className="w-full mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg disabled:opacity-50"
+          >
+            Place Bet
+          </button>
         </>
-      ) : <p>No match update received yet.</p>}
-    </section>
+      )}
+    </div>
   );
-}
+};
+
+export default BetSlip;
