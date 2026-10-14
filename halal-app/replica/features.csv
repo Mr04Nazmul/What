@@ -1,0 +1,10 @@
+feature,area,priority,original,clone,notes
+Product JAN input,Search,must,advertised,yes,Live testing required
+Product name search,Search,must,advertised,partial,OFF legacy search availability untested
+Camera scanner,Scan,must,advertised,partial,Browser BarcodeDetector device support varies
+Ingredient display,Product,must,advertised,yes,Only available when OFF record contains ingredients
+Halal decision engine,Product,must,not confirmed,no,Needs verified origins and certification
+Japanese products database,Data,must,advertised,partial,OFF only, Japan store coverage not guaranteed
+Multi-language,UI,should,advertised,partial,Three language controls; about section not fully translated
+Offline support,App,should,unknown,no,Not implemented
+Android APK,Build,must,Android app,no,Responsive website prototype only
