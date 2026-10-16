@@ -52,7 +52,7 @@ jobs:
                   import subprocess
                   subprocess.run(['node','--check',str(file)],check=True)
               print('JS syntax passed',name)
-          app=pathlib.Path('life-app/index.html','train-assistant/index.html').read_text()
+          app=pathlib.Path('life-app/index.html').read_text()
           for requirement in ('../train-assistant/','data-screen="train"','../student-baito/','../letter-ai/','data-screen="baito"','data-screen="letter"','aria-label="Main navigation"','serviceWorker'):
               assert requirement in app, 'Missing Japan Life app requirement '+requirement
           for file in ('life-app/manifest.webmanifest','life-app/sw.js','life-app/icon.svg'):
