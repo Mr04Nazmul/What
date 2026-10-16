@@ -6,12 +6,14 @@ on:
       - 'index.html'
       - 'letter-ai/**'
       - 'student-baito/**'
+      - 'life-app/**'
       - '.github/workflows/japan-life-pages.yml'
   pull_request:
     paths:
       - 'index.html'
       - 'letter-ai/**'
       - 'student-baito/**'
+      - 'life-app/**'
       - '.github/workflows/japan-life-pages.yml'
   workflow_dispatch:
 permissions:
@@ -33,12 +35,12 @@ jobs:
         run: |
           python3 - <<'PY'
           import re, pathlib
-          for name in ('index.html','letter-ai/index.html','student-baito/index.html'):
+          for name in ('index.html','letter-ai/index.html','student-baito/index.html','life-app/index.html'):
               html=pathlib.Path(name).read_text(encoding='utf-8')
               assert '<!doctype html>' in html.lower()
               assert 'viewport' in html
               print('Validated HTML',name,len(html))
-          for name in ('letter-ai/index.html','student-baito/index.html'):
+          for name in ('letter-ai/index.html','student-baito/index.html','life-app/index.html'):
               html=pathlib.Path(name).read_text(encoding='utf-8')
               scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',html,re.I|re.S)
               assert scripts, 'No JavaScript in '+name
@@ -48,6 +50,15 @@ jobs:
                   import subprocess
                   subprocess.run(['node','--check',str(file)],check=True)
               print('JS syntax passed',name)
+          app=pathlib.Path('life-app/index.html').read_text()
+          for requirement in ('../student-baito/','../letter-ai/','data-screen="baito"','data-screen="letter"','aria-label="Main navigation"','serviceWorker'):
+              assert requirement in app, 'Missing Japan Life app requirement '+requirement
+          for file in ('life-app/manifest.webmanifest','life-app/sw.js','life-app/icon.svg'):
+              assert pathlib.Path(file).is_file(), file
+          import json
+          assert json.loads(pathlib.Path('life-app/manifest.webmanifest').read_text())['display']=='standalone'
+          import subprocess
+          subprocess.run(['node','--check','life-app/sw.js'],check=True)
           assert 'Tesseract.createWorker' in pathlib.Path('letter-ai/index.html').read_text()
           baito=pathlib.Path('student-baito/index.html').read_text()
           for text in ('nightHours','isoWeek','segments','localStorage','Export CSV'):
