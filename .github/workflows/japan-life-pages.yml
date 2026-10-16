@@ -1,0 +1,71 @@
+name: Validate and deploy Japan Life Tools
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'letter-ai/**'
+      - 'student-baito/**'
+      - '.github/workflows/japan-life-pages.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'letter-ai/**'
+      - 'student-baito/**'
+      - '.github/workflows/japan-life-pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: japan-life-tools-pages
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test two static apps and inline JavaScript
+        run: |
+          python3 - <<'PY'
+          import re, pathlib
+          for name in ('index.html','letter-ai/index.html','student-baito/index.html'):
+              html=pathlib.Path(name).read_text(encoding='utf-8')
+              assert '<!doctype html>' in html.lower()
+              assert 'viewport' in html
+              print('Validated HTML',name,len(html))
+          for name in ('letter-ai/index.html','student-baito/index.html'):
+              html=pathlib.Path(name).read_text(encoding='utf-8')
+              scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',html,re.I|re.S)
+              assert scripts, 'No JavaScript in '+name
+              for i,script in enumerate(scripts):
+                  file=pathlib.Path('/tmp/'+name.replace('/','-')+str(i)+'.js')
+                  file.write_text(script)
+                  import subprocess
+                  subprocess.run(['node','--check',str(file)],check=True)
+              print('JS syntax passed',name)
+          assert 'Tesseract.createWorker' in pathlib.Path('letter-ai/index.html').read_text()
+          baito=pathlib.Path('student-baito/index.html').read_text()
+          for text in ('nightHours','isoWeek','segments','localStorage','Export CSV'):
+              assert text in baito
+          PY
+      - name: Upload deployment artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: validate
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
