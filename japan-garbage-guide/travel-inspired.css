@@ -1,0 +1,30 @@
+/* Original Japan Garbage Guide theme inspired by user-provided Adobe XD travel palette.
+   No font files, screenshots or copyrighted art imported. */
+:root{--jgg-purple:#200e32;--jgg-yellow:#ffd500;--jgg-offwhite:#f3f5f7;--jgg-charcoal:#212121}
+body.native-app{background:#f3f5f7!important;color:#212121!important}
+body.native-app .app{max-width:980px}
+body.native-app .native-topbar{background:#200e32!important;color:#fff!important;border-radius:0 0 26px 26px!important;padding:18px 20px!important;box-shadow:0 14px 32px #200e322e!important}
+body.native-app .native-topbar .native-brand strong{color:white!important;font-weight:900;letter-spacing:-.045em}
+body.native-app .native-topbar .native-brand small{color:#e1d8eb!important}
+body.native-app .native-topbar .native-symbol{background:#ffd500!important;color:#200e32!important;border-radius:16px!important}
+body.native-app .native-view{color:#212121}
+body.native-app .native-view-title{color:#200e32!important;letter-spacing:-.045em!important}
+body.native-app .native-view-sub{color:#67616e!important}
+body.native-app .nationwide-card{background:linear-gradient(145deg,#200e32,#42315d 76%,#584271)!important;color:white!important;border:0!important;box-shadow:0 18px 40px #200e3238!important;border-radius:26px!important}
+body.native-app .nationwide-eyebrow{color:#ffd500!important}
+body.native-app .nationwide-card h2{color:white!important}
+body.native-app .nationwide-card p{color:#eee7f5!important}
+body.native-app .nationwide-action,body.native-app .planner-primary{background:#ffd500!important;color:#200e32!important;border:0!important;border-radius:15px!important;box-shadow:0 5px 14px #190d2221!important}
+body.native-app .nationwide-grid select,body.native-app .nationwide-grid input{background:#ffffff1b!important;color:white!important;border:1px solid #ffffff52!important;border-radius:14px!important}
+body.native-app .native-home-search{background:white!important;border-radius:20px!important;box-shadow:0 10px 30px #200e3213!important}
+body.native-app .native-home-search input{color:#212121!important}
+body.native-app .panel,body.native-app .planner-panel,body.native-app .official-groups,body.native-app .live-point-section,body.native-app .planner-home-summary,body.native-app .private-station-controls{background:#fff!important;color:#212121!important;border:1px solid #e9e5ec!important;border-radius:23px!important;box-shadow:0 8px 26px #200e3210!important}
+body.native-app .panel h2,body.native-app .planner-panel h2,body.native-app .official-groups h3,body.native-app .live-point-heading h3{color:#200e32!important}
+body.native-app .bottom-nav{background:#200e32!important;border:0!important;border-radius:22px!important;box-shadow:0 12px 35px #200e324a!important}
+body.native-app .bottom-nav button{color:#ded4e6!important;border-radius:15px!important}
+body.native-app .bottom-nav button[aria-current=page]{background:#ffd500!important;color:#200e32!important}
+body.native-app .planner-day.is-today{border:2px solid #ffd500!important}
+body.native-app #liveMap{border-radius:22px!important;overflow:hidden}
+body.native-app button:focus-visible,body.native-app a:focus-visible,body.native-app input:focus-visible{outline:3px solid #dbb600!important;outline-offset:2px}
+@media(max-width:650px){body.native-app .app{padding:10px!important}body.native-app .native-topbar{margin:-10px -10px 15px!important;border-radius:0 0 24px 24px!important}body.native-app .bottom-nav{width:calc(100% - 20px)!important}body.native-app .nationwide-card{margin:13px 0!important}}
+@media(prefers-reduced-motion:reduce){body.native-app *,body.native-app *:before,body.native-app *:after{transition:none!important;animation:none!important}}
