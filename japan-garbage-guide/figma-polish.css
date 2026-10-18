@@ -1,0 +1,50 @@
+/* Japan Garbage Guide — Figma-grade minimal iOS-like product shell */
+body.native-app{background:#eef3f0!important;color:#152d26!important;font-family:-apple-system,BlinkMacSystemFont,Inter,system-ui,sans-serif!important}
+body.native-app .app{background:#f5f7f5!important;max-width:640px;min-height:100dvh}
+body.native-app .native-topbar{height:76px!important;padding:14px 20px!important;background:#fff!important;border:0!important;box-shadow:none!important}
+.native-symbol{width:42px!important;height:42px!important;border-radius:14px!important;background:#edf7f0!important;color:#087454!important;font-size:23px!important}
+.native-brand strong{font-size:16px!important;letter-spacing:-.5px!important;font-weight:800}.native-brand small{font-size:11px!important;color:#7b9086!important}
+body.native-app .native-topbar #lang{max-width:109px!important;padding:9px!important;background:#f4f7f5!important;border:0!important;border-radius:11px!important}
+body.native-app .native-view{padding-bottom:122px!important;min-height:calc(100dvh - 82px)}
+body.native-app .native-home-search{padding:10px 19px 15px!important;background:#fff!important}
+body.native-app .native-home-search .search{background:#f3f6f4!important;border:1px solid #e5ece7!important;border-radius:17px!important;padding:4px 4px 4px 9px!important;box-shadow:none!important}
+body.native-app .native-home-search input{font-size:14px!important;color:#19392e!important}
+body.native-app .native-home-search .primary{background:#107b5c!important;color:#fff!important;font-size:12px!important;font-weight:750!important;border-radius:13px!important;min-height:45px!important;padding:8px 14px!important;box-shadow:none!important}
+body.native-app .native-section-top{background:#fff!important;padding:3px 20px 17px!important;align-items:flex-end!important}
+body.native-app .native-section-top strong{font-size:22px!important;font-weight:800!important;letter-spacing:-.7px!important}
+body.native-app .native-section-top small{font-size:12px!important}
+body.native-app .native-live-chip{font-size:10px!important;color:#16734f!important;background:#e9f7ee!important;padding:8px 10px!important;border:0!important;letter-spacing:.04em}
+body.native-app .geo-panel{background:#f5f7f5!important}
+body.native-app .geo-panel>.geo-actions:first-of-type{top:14px!important;left:16px!important;right:16px!important;align-items:center!important}
+body.native-app .geo-panel>.geo-actions:first-of-type #locationState{max-width:135px!important;font-size:10px!important;background:rgba(255,255,255,.95)!important;box-shadow:0 4px 17px #1b3c2920;padding:9px 10px!important;color:#477263!important;border-radius:14px!important}
+body.native-app .geo-primary{font-size:12px!important;padding:12px 13px!important;border-radius:15px!important;background:#fff!important;color:#0b7452!important;font-weight:800!important;box-shadow:0 4px 20px #183b2833!important;max-width:200px}
+body.native-app .geo-map-frame{height:clamp(370px,53dvh,570px)!important;min-height:370px!important}
+body.native-app #liveMap{height:100%!important;min-height:100%!important}
+body.native-app .live-point-section{margin:-27px 12px 0!important;border:1px solid #e7eee9!important;border-radius:25px!important;background:#fff!important;min-height:190px!important;padding:13px 17px 18px!important;box-shadow:0 -4px 30px #153b2614!important}
+body.native-app .native-handle{width:40px!important;height:5px!important;margin:0 auto 17px!important;background:#d8dfdb!important}
+body.native-app .live-point-heading h3{font-size:18px!important;letter-spacing:-.5px!important;font-weight:800!important}
+body.native-app .live-point-heading span{font-size:9px!important;border-radius:99px!important;background:#e6f6ed!important;color:#097852!important}
+body.native-app .live-point-section>p{font-size:12px!important;color:#729084!important;line-height:1.5!important}
+body.native-app .live-point-card{border:1px solid #e5ece8!important;box-shadow:none!important;border-radius:17px!important;background:#f9fbfa!important}
+body.native-app #liveAccuracy{display:none}
+body.native-app #liveMapStatus{font-size:11px!important;color:#628275!important}
+body.native-app .live-disclaimer{font-size:11px!important}
+body.native-app .private-station-controls{display:none!important}
+body.native-app .quick-mark-station{bottom:16px!important;right:15px!important;border-radius:13px!important;background:#fff!important;font-size:11px!important;padding:11px 13px!important;box-shadow:0 5px 24px #223c2840!important}
+body.native-app .official-groups{display:none!important}
+body.native-app #nativeMore .official-groups{display:block!important;box-shadow:none!important;margin:18px 0!important;border-radius:22px!important}
+body.native-app .native-view-panel{padding:25px 19px 120px!important;background:#f6f8f6!important}
+body.native-app .native-view-title{font-size:29px!important;font-weight:850!important;letter-spacing:-1.3px!important;line-height:1.15!important;margin:0 0 7px!important}
+body.native-app .native-view-sub{font-size:13px!important;color:#768d82!important;margin:0 0 23px!important}
+body.native-app .cards{gap:11px!important}
+body.native-app .waste{min-height:130px!important;border:1px solid #e8eee9!important;border-radius:23px!important;background:#fff!important;box-shadow:0 4px 19px #142e2008!important}
+body.native-app #schedulePanel,body.native-app #verifiedSchedules{border:1px solid #e7eee9!important;box-shadow:none!important;border-radius:24px!important}
+body.native-app .native-more-links a{border:1px solid #e7eee9!important;border-radius:19px!important;box-shadow:0 3px 14px #12362408!important}
+body.native-app .bottom-nav{position:fixed!important;z-index:950!important;width:min(590px,calc(100vw - 24px))!important;bottom:max(12px,env(safe-area-inset-bottom))!important;left:50%!important;border-radius:26px!important;padding:8px!important;background:rgba(255,255,255,.97)!important;border:1px solid #e4ece5!important;box-shadow:0 7px 32px #0e2d1d29!important}
+body.native-app .bottom-nav button{border-radius:20px!important;min-height:57px!important;font-size:11px!important;color:#87968e!important;font-weight:750!important}
+body.native-app .bottom-nav button[aria-current="page"]{background:#e0f3e8!important;color:#076945!important}
+body.native-app .native-view[data-active=false]{display:none!important}
+body.native-app .native-view[data-active=true]{display:block!important}
+body.native-app .native-view .grid{grid-template-columns:1fr!important}
+body.native-app .native-view#nativeHome{padding-bottom:112px!important}
+@media(max-width:380px){body.native-app .native-topbar{padding:13px!important}body.native-app .native-home-search{padding:9px 13px 14px!important}.native-brand strong{font-size:14px!important}body.native-app .native-section-top{padding:4px 15px 15px!important}}
