@@ -5,3 +5,5 @@
 .private-station-controls button{padding:10px 12px;border-radius:12px;font-weight:750;border:1px solid #c9e5d3;background:#fff;color:#0b7455;margin:3px 7px 4px 0;cursor:pointer}
 .private-station-controls button:first-of-type{background:#0b7455;color:#fff;border-color:#0b7455}
 .private-station-controls #privateStationStatus{font-size:11px;margin-top:8px}
+
+.geo-map-frame{position:relative!important}.quick-mark-station{position:absolute;z-index:600;right:12px;bottom:17px;background:#fff;color:#087455;border:1px solid #d4e6d9;border-radius:22px;min-height:43px;padding:9px 13px;font-size:12px;font-weight:800;box-shadow:0 4px 18px #0c32273d;cursor:pointer}.quick-mark-station:focus-visible{outline:3px solid #0d9e70}
