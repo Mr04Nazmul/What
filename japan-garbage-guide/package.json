@@ -4,11 +4,12 @@
   "private": true,
   "description": "Multilingual Japan municipal waste guide PWA and Android wrapper",
   "scripts": {
-    "build": "mkdir -p www && cp index.html manifest.json sw.js icon.svg ai-assistant.css ai-assistant.js smart-guide.js location-guide.js location-guide.css map-first-pro.css map-first-pro.js nearby-100m.js nearby-100m.css native-shell.css native-shell.js official-groups.js official-groups.css kobe-community-collections.json hyuga-clean-stations.json figma-polish.css figma-polish.js collection-planner.js collection-planner.css www/"
+    "build": "mkdir -p www && cp index.html manifest.json sw.js icon.svg ai-assistant.css ai-assistant.js smart-guide.js location-guide.js location-guide.css map-first-pro.css map-first-pro.js nearby-100m.js nearby-100m.css native-shell.css native-shell.js official-groups.js official-groups.css kobe-community-collections.json hyuga-clean-stations.json figma-polish.css figma-polish.js collection-planner.js collection-planner.css local-reminders.js native-notifications.js www/"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
-    "@capacitor/core": "^7.4.3"
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/local-notifications": "^7.0.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.4.3"
