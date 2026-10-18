@@ -4,7 +4,7 @@
   "private": true,
   "description": "Multilingual Japan municipal waste guide PWA and Android wrapper",
   "scripts": {
-    "build": "mkdir -p www && cp index.html manifest.json sw.js icon.svg ai-assistant.css ai-assistant.js www/"
+    "build": "mkdir -p www && cp index.html manifest.json sw.js icon.svg ai-assistant.css ai-assistant.js smart-guide.js www/"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
