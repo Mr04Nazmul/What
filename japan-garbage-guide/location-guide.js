@@ -18,7 +18,7 @@ navigator.geolocation.getCurrentPosition(pos=>{
  status.textContent='Location found (±'+accuracy+'m)';
  $('openNearbyMap').href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('recycling drop-off near '+q);
  $('openNearbyMap').textContent='↗ Nearby places in Google Maps';
- const note=$('geoNote');note.innerHTML='<strong>Location enabled.</strong> The map above shows Kobe City’s verified category-specific drop-off sites. Use Google Maps to inspect routes and proximity. Location does <strong>not</strong> prove you may use a residential garbage station; confirm that separately with your building management.';
+ const note=$('geoNote');note.innerHTML='<strong>Location enabled.</strong> The map above is Kobe City’s official recycling layer (Kobe only), not a GPS-generated list. The nearby search opens Google Maps around your actual position, but those search results are <strong>not verified municipal disposal permissions</strong>. Never use another neighborhood’s residential garbage station without authorization.';
  $('useLocation').textContent='✓ Refresh location';$('useLocation').disabled=false;
 },err=>{status.textContent=err.code===1?'Location denied — allow it in browser settings':err.code===2?'Location unavailable':'GPS timed out — try again';$('useLocation').disabled=false},{enableHighAccuracy:true,timeout:13000,maximumAge:60000});
 }
