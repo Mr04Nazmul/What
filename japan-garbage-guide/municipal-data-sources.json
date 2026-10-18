@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "coverage": "partial",
+  "description": "Verified municipal open-data discovery catalog. This is not nationwide point coverage; do not treat links as validated map pins.",
+  "sources": [
+    {
+      "municipality": "宇都宮市",
+      "prefecture": "栃木県",
+      "kind": "garbage_collection_points",
+      "landingPage": "https://catalog.city.utsunomiya.tochigi.jp/dataset/gomi-station",
+      "lastReportedUpdate": "2026-03-25",
+      "status": "source_identified_not_imported",
+      "license": "CC BY"
+    },
+    {
+      "municipality": "菊川市",
+      "prefecture": "静岡県",
+      "kind": "garbage_collection_points",
+      "landingPage": "https://opendata.pref.shizuoka.jp/dataset/fuji-922.html",
+      "lastReportedUpdate": "2019-12-02",
+      "status": "source_identified_stale_not_imported",
+      "license": "CC BY"
+    },
+    {
+      "municipality": "国立市",
+      "prefecture": "東京都",
+      "kind": "garbage_collection_points",
+      "landingPage": "https://spec.api.metro.tokyo.lg.jp/spec/t132152d0000000019-be2e0f271c803e5aeedf6055d4e7b1b8-0",
+      "csvUrl": "https://www.opendata.metro.tokyo.lg.jp/kunitachi/132152_garbage_collection_place.csv",
+      "status": "source_identified_not_imported"
+    },
+    {
+      "municipality": "日向市",
+      "prefecture": "宮崎県",
+      "kind": "garbage_collection_points",
+      "file": "hyuga-clean-stations.json",
+      "status": "bundled_existing_needs_freshness_check"
+    },
+    {
+      "municipality": "神戸市",
+      "prefecture": "兵庫県",
+      "kind": "community_resource_collections",
+      "file": "kobe-community-collections.json",
+      "status": "partial_non_household_points"
+    }
+  ],
+  "nationalStandard": "https://www.digital.go.jp/resources/open_data/municipal-standard-data-set-test",
+  "warning": "Locations may be private, outdated or restricted. Always verify municipality and eligibility before showing disposal directions."
+}
