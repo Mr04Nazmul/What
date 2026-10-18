@@ -83,6 +83,12 @@ function create(){
  const detail=document.createElement("p");detail.id="plannerSelectedDay";detail.className="planner-selected";detail.textContent="Tap a date to see scheduled categories.";schedule?.append(detail);
  // Hide obsolete faux reminder form, leave underlying data untouched for backward compatibility.
  view.querySelectorAll(".panel").forEach(x=>{if(x!==schedule&&/Official collection dates & real reminders/i.test(x.textContent))x.remove()});
+ const more=$("nativeMore");if(more){
+   const legacy=more.querySelectorAll(".grid");for(const block of legacy)block.hidden=true;
+   const oldLinks=more.querySelector(".native-more-links");if(oldLinks)oldLinks.hidden=true;
+   const simplified=document.createElement("section");simplified.className="planner-panel";simplified.innerHTML='<h2>Settings</h2><p>Change the app language from the selector at the top. Your personal collection schedule and home station stay saved on this device.</p><details><summary>Official sources & help</summary><p><a href="https://www.city.kobe.lg.jp/" target="_blank" rel="noopener noreferrer">Kobe City official information ↗</a></p><p>Household garbage station access and dates depend on your assigned neighborhood collection pattern.</p></details>';
+   more.insertBefore(simplified,more.firstElementChild?.nextSibling||null);
+ }
  const home=$("nativeHome");if(home){const summary=document.createElement("div");summary.className="planner-home-summary";summary.innerHTML='<strong>Next garbage collection</strong><p id="plannerHomeNext">Set your collection days in Calendar</p><button id="plannerOpenCalendar">Set schedule ↗</button>';const geo=$("geoPanel");if(geo)geo.insertAdjacentElement("beforebegin",summary);$("plannerOpenCalendar").onclick=()=>{$("navCalendar")?.click()}}
  const originalRefresh=refresh;refresh=functionRef;
  function functionRef(){originalRefresh();const up=upcoming();const t=up[0]?typeFor(up[0].type):null;const el=$("plannerHomeNext");if(el)el.textContent=t?t.emoji+" "+t.name+" · "+human(up[0].date):"No schedule yet. Set your collection days."}
