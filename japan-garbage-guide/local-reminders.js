@@ -2,12 +2,13 @@
 (()=>{"use strict";
 const KEY="jgg-collection-rules-v1",SENT="jgg-reminder-sent-v1";
 let timer;
-function todayInJapan(){return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}
+function todayInJapan(){return japanDate(new Date())}
+function japanDate(date){const parts=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(date);const part=x=>parts.find(p=>p.type===x)?.value;return part("year")+"-"+part("month")+"-"+part("day")}
 function timeInJapan(){return new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(new Date())}
 function data(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch{return []}}
 function matching(date,r){const d=new Date(date+"T12:00:00+09:00");const week=Math.ceil(d.getDate()/7);return d.getDay()===Number(r.weekday)&&(Number(r.interval)===1||(Number(r.interval)===2&&[1,3].includes(week))||(Number(r.interval)===4&&week===Number(r.ordinal||1)))}
 const labels={burnable:"Burnable",plastic:"Plastic",cans:"Bottles / Cans",paper:"Paper",nonburnable:"Non-burnable"};
-function check(){if(!("Notification" in window)||Notification.permission!=="granted")return;const date=todayInJapan(),time=timeInJapan();const next=new Date(date+"T12:00:00+09:00");next.setDate(next.getDate()+1);const tomorrow=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit"}).format(next);
+function check(){if(!("Notification" in window)||Notification.permission!=="granted")return;const date=todayInJapan(),time=timeInJapan();const next=new Date(date+"T12:00:00+09:00");next.setDate(next.getDate()+1);const tomorrow=japanDate(next);
 let sent={};try{sent=JSON.parse(localStorage.getItem(SENT)||"{}")}catch{}
 for(const r of data()){const morning=r.remind==="morning",day=morning?date:tomorrow;const due=morning?(time>="08:00"&&time<"10:00"):(time>="20:00"&&time<"22:00");const key=r.id+":"+day+":"+(morning?"morning":"evening");if(!due||!matching(day,r)||sent[key])continue;const label=labels[r.type]||"Garbage";try{new Notification("Garbage collection reminder",{body:label+(morning?" collection today":" collection tomorrow")+". Confirm with your local city schedule.",tag:key,icon:"./icon.svg"});sent[key]=Date.now()}catch{}}
 const cutoff=Date.now()-10*86400000;Object.keys(sent).forEach(k=>{if(sent[k]<cutoff)delete sent[k]});localStorage.setItem(SENT,JSON.stringify(sent));
