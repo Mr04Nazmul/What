@@ -176,7 +176,7 @@ $('check').onclick=()=>{
 };
 $('city').addEventListener('change',()=>{try{localStorage.setItem('jgg-area',JSON.stringify({city:$('city').value,ward:$('ward').value.trim(),town:$('town').value.trim()}))}catch(e){}});
 $('ward').addEventListener('change',saveArea);$('town').addEventListener('change',saveArea);
-$('notify').onclick=async()=>{
+$('notify').onclick=async()=>{if($('city').value==='Kobe'){const area=saveArea();const r=$('areaResult');r.classList.add('show');r.textContent='Kobe official LINE offers actual garbage collection reminders. Choose ごみ → ごみ出し曜日プッシュ通知設定 and confirm your address and alert time. Opening official LINE now.';window.open('https://lin.ee/3TT6shh','_blank','noopener,noreferrer');return;}
  if(!('Notification'in window)){toast('This browser does not support web notifications.');return}
  try{
   const p=await Notification.requestPermission();
