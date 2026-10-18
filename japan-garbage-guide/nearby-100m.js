@@ -4,7 +4,7 @@
 const byId=id=>document.getElementById(id);
 const R=100;
 const endpoints=["https://overpass.kumi.systems/api/interpreter","https://overpass.nchc.org.tw/api/interpreter","https://overpass-api.de/api/interpreter"];
-let map=null, layer=null, circle=null, centerMarker=null, lastCoords=null, busy=false, reqNo=0;
+let map=null, layer=null, circle=null, centerMarker=null, lastCoords=null, busy=false, reqNo=0, watchId=null, lastFetchAt=0, lastFetchPosition=null;
 function distance(a,b,c,d){const rad=Math.PI/180,Rm=6371000,p=(c-a)*rad,q=(d-b)*rad;const v=Math.sin(p/2)**2+Math.cos(a*rad)*Math.cos(c*rad)*Math.sin(q/2)**2;return 2*Rm*Math.asin(Math.sqrt(v))}
 function labelFor(t){if(t.amenity==="recycling")return "♻️ Recycling drop-off";if(t.amenity==="waste_basket")return "🗑️ Public litter bin";if(t.amenity==="waste_disposal")return "🚮 Waste disposal point";return "Collection point"}
 function types(t){const keys=Object.keys(t).filter(k=>k.startsWith("recycling:")&&t[k]==="yes").map(k=>k.slice(10).replace(/_/g," "));return keys.slice(0,5).join(", ")}
@@ -78,7 +78,13 @@ function onPosition(p){
  const hint=byId("liveAccuracy");if(hint)hint.textContent="GPS accuracy ±"+accuracy+" m. Distances are straight-line, not walking distances.";
  const link=byId("openNearbyMap");if(link){link.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("recycling center near "+lat+","+lon)}
  if(!ensureMap(lat,lon))return;
- find(lat,lon);
+ lastFetchAt=Date.now();lastFetchPosition={lat,lon};find(lat,lon);
+ if(watchId===null){watchId=navigator.geolocation.watchPosition(next=>{
+   const a=next.coords.latitude,b=next.coords.longitude;
+   if(lastFetchPosition&&distance(a,b,lastFetchPosition.lat,lastFetchPosition.lon)<25)return;
+   if(Date.now()-lastFetchAt<30000||busy)return;
+   onPosition(next);
+ },()=>{}, {enableHighAccuracy:true,maximumAge:15000,timeout:15000});}
 }
 function start(){
  if(!navigator.geolocation){status("This device does not support GPS.");return}
