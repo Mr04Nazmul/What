@@ -8,8 +8,8 @@ const maps={
  fluorescent:"1iIxDLNmnm-s0_oaJyAvYFTSQUb7Otwk"
 };
 const $=id=>document.getElementById(id);
-function setMap(){const mid=maps[$('recycleCategory').value]||maps.paper;$('wasteMap').src='https://www.google.com/maps/d/embed?mid='+encodeURIComponent(mid);$('openOfficialMap').href='https://www.google.com/maps/d/viewer?mid='+encodeURIComponent(mid)}
-function geo(){
+function setMap(){const mid=maps[$('recycleCategory').value]||maps.paper;const frame=$('wasteMap');if(frame && !document.body.classList.contains('live-map-active'))frame.src='https://www.google.com/maps/d/embed?mid='+encodeURIComponent(mid);$('openOfficialMap').href='https://www.google.com/maps/d/viewer?mid='+encodeURIComponent(mid)}
+function geo(){if(window.JGGNearby100m){window.JGGNearby100m.start();return;}
 const status=$('locationState');if(!navigator.geolocation){status.textContent='GPS is not supported by this browser';return}
 status.textContent='Requesting location…';$('useLocation').disabled=true;
 navigator.geolocation.getCurrentPosition(pos=>{
