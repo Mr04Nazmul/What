@@ -3,14 +3,14 @@
 "use strict";
 const byId=id=>document.getElementById(id);
 const R=100;
-const endpoints=["https://overpass.kumi.systems/api/interpreter","https://overpass.nchc.org.tw/api/interpreter","https://overpass-api.de/api/interpreter"];
+const endpoints=["https://overpass.kumi.systems/api/interpreter","https://overpass.private.coffee/api/interpreter","https://overpass.nchc.org.tw/api/interpreter","https://overpass-api.de/api/interpreter","https://overpass.ultra-trail.de/api/interpreter"];
 let map=null, layer=null, circle=null, centerMarker=null, privateMarker=null, lastCoords=null, busy=false, reqNo=0, watchId=null, lastFetchAt=0, lastFetchPosition=null, placing=false;
 function distance(a,b,c,d){const rad=Math.PI/180,Rm=6371000,p=(c-a)*rad,q=(d-b)*rad;const v=Math.sin(p/2)**2+Math.cos(a*rad)*Math.cos(c*rad)*Math.sin(q/2)**2;return 2*Rm*Math.asin(Math.sqrt(v))}
 function labelFor(t){if(t.name&&/ごみステーション|ゴミステーション|クリーンステーション|ごみ集積所|ゴミ集積所|ごみ置き場|ゴミ置き場|資源回収|集団回収/.test(t.name))return "🏠 Named waste collection station (verify permission)";if(t.amenity==="recycling")return "♻️ Recycling drop-off";if(t.amenity==="waste_basket")return "🗑️ Public litter bin";if(t.amenity==="waste_disposal")return "🚮 Waste disposal point";return "Collection point"}
 function types(t){const keys=Object.keys(t).filter(k=>k.startsWith("recycling:")&&t[k]==="yes").map(k=>k.slice(10).replace(/_/g," "));return keys.slice(0,5).join(", ")}
 function status(text){if(byId("locationState"))byId("locationState").textContent=text;const x=byId("liveMapStatus");if(x)x.textContent=text}
 function toNumber(n){return Number(n).toFixed(6)}
-function osmQuery(lat,lon){const around="(around:"+R+","+toNumber(lat)+","+toNumber(lon)+")";return '[out:json][timeout:22];(nwr'+around+'["amenity"~"^(recycling|waste_basket|waste_disposal)$"];nwr'+around+'["name"~"ごみステーション|ゴミステーション|クリーンステーション|ごみ集積所|ゴミ集積所|ごみ置き場|ゴミ置き場|資源回収"];);out center tags;'}
+function osmQuery(lat,lon){const around="(around:"+R+","+toNumber(lat)+","+toNumber(lon)+")";return '[out:json][timeout:18];(nwr'+around+'["amenity"~"^(recycling|waste_basket|waste_disposal)$"];nwr'+around+'["name"~"ごみ|ゴミ|クリーンステーション|資源回収|集積所"];nwr'+around+'["recycling_type"];);out center tags;'}
 let hyugaDataPromise=null;
 function isHyuga(lat,lon){return lat>=32.2&&lat<=32.65&&lon>=131.3&&lon<=131.85}
 function officialData(){if(!hyugaDataPromise)hyugaDataPromise=fetch("./hyuga-clean-stations.json",{cache:"no-store"}).then(x=>{if(!x.ok)throw Error("official data failed");return x.json()}).catch(e=>{hyugaDataPromise=null;throw e});return hyugaDataPromise}
@@ -40,19 +40,31 @@ async function findOfficialHyuga(lat,lon,my){
 async function find(lat,lon){
  const my=++reqNo;busy=true;if(isHyuga(lat,lon)){await findOfficialHyuga(lat,lon,my);busy=false;return}const q=osmQuery(lat,lon);status("Checking live map data within 100 m…");
  let data=null,lastError=null;
+ // Most public Overpass servers rate-limit POST, and some reject cross-origin requests.
+ // Attempt standard form POST then short encoded GET against multiple independent mirrors.
  for(const endpoint of endpoints){
-  try{
-   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),11000);
+  if(my!==reqNo)return;
+  for(const method of ["POST","GET"]){
+   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8500);
    try{
-    const response=await fetch(endpoint,{method:"POST",body:new URLSearchParams({data:q}),headers:{"Content-Type":"application/x-www-form-urlencoded"},signal:controller.signal,cache:"no-store"});
-    if(!response.ok)throw new Error("Map provider "+response.status);
-    data=await response.json();break;
-   }finally{clearTimeout(timer)}
-  }catch(e){lastError=e}
+    const url=method==="GET"?endpoint+"?data="+encodeURIComponent(q):endpoint;
+    const response=await fetch(url,{
+     method,
+     ...(method==="POST"?{body:new URLSearchParams({data:q}),headers:{"Content-Type":"application/x-www-form-urlencoded"}}:{}),
+     signal:controller.signal,cache:"no-store",mode:"cors"
+    });
+    if(!response.ok)throw new Error("Overpass "+response.status);
+    const candidate=await response.json();
+    if(!candidate||!Array.isArray(candidate.elements))throw new Error("Unexpected Overpass response");
+    data=candidate;break;
+   }catch(e){lastError=e}finally{clearTimeout(timer)}
+  }
+  if(data)break;
  }
+
  if(my!==reqNo)return;
  busy=false;
- if(!data){status("Live map service unavailable. Retry in a moment.");renderMessage("Could not load live public map data. This is not a zero-results confirmation.");return}
+ if(!data){status("Map data providers unavailable. Your GPS is working.");renderMessage("Nearby lookup is temporarily offline (not zero places). Try again later or use Google Maps search. Unlisted residential stations cannot be detected automatically.");const open=byId("openNearbyMap");if(open){open.hidden=false;open.textContent="↗ Search nearby in Google Maps"}return}
  const seen=new Set();
  const items=(data.elements||[]).map(e=>{
   const lat2=e.lat??e.center?.lat,lon2=e.lon??e.center?.lon;
