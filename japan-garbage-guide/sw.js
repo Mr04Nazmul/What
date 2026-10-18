@@ -1,5 +1,5 @@
-const CACHE_NAME = 'japan-garbage-guide-ui-v9';
-const ASSETS = ['./', './index.html', './manifest.json', './ai-assistant.css', './ai-assistant.js', './smart-guide.js', './location-guide.js', './location-guide.css', './map-first-pro.css', './map-first-pro.js', './nearby-100m.js', './nearby-100m.css', './native-shell.css', './native-shell.js', './official-groups.js', './official-groups.css', './kobe-community-collections.json', './hyuga-clean-stations.json', './figma-polish.css', './figma-polish.js'];
+const CACHE_NAME = 'japan-garbage-guide-schedule-v10';
+const ASSETS = ['./', './index.html', './manifest.json', './ai-assistant.css', './ai-assistant.js', './smart-guide.js', './location-guide.js', './location-guide.css', './map-first-pro.css', './map-first-pro.js', './nearby-100m.js', './nearby-100m.css', './native-shell.css', './native-shell.js', './official-groups.js', './official-groups.css', './kobe-community-collections.json', './hyuga-clean-stations.json', './figma-polish.css', './figma-polish.js', './collection-planner.js', './collection-planner.css'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
