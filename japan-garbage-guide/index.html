@@ -108,6 +108,7 @@ a{color:#bba6ff}
 <section class="hero"><div class="eyebrow" id="eyebrow">AI-inspired sorting assistant</div><h1 id="headline">Know what goes where.</h1><p id="intro">Find sorting guidance and set up your local collection calendar. Collection dates must be confirmed with your municipality.</p><div class="search"><input id="query" placeholder="Search an item: plastic bottle, can, paper…"><button class="primary" id="searchBtn">Find sorting guide ↗</button></div></section>
 <div id="smartResult" class="result" aria-live="polite" style="margin:14px 0 0"></div>
 
+<div hidden aria-hidden="true" id="legacyAreaFields"><select id="city"><option value="Kobe" selected>Kobe</option><option>Osaka</option><option>Kyoto</option><option>Other municipality</option></select><input id="ward"><input id="town"><button id="check" type="button"></button><button id="notify" type="button"></button></div>
 <section class="panel geo-panel" id="geoPanel">
   <div class="geo-head"><div><span class="geo-kicker">✦ LOCATION-POWERED GUIDE</span><h2 id="areaTitle">Find nearby collection points</h2><p class="sub" id="areaSub">Allow location to explore public recycling drop-off maps near you.</p></div><span class="geo-symbol">⌖</span></div>
   <div class="geo-actions"><button id="useLocation" class="geo-primary" type="button">◎ Use My Location</button><span id="locationState" role="status" aria-live="polite">Location is off</span></div>
