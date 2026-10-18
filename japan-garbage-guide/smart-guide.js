@@ -23,7 +23,7 @@ function runSearch(){
  if(!q){window.toast?.('Enter an item to search.');el('query')?.focus();return}
  const needle=q.toLocaleLowerCase().normalize('NFKC');
  const matches=items.filter(x=>x.keys.some(k=>needle.includes(k.toLocaleLowerCase())||k.toLocaleLowerCase().includes(needle)));
- const result=el('areaResult');if(!result)return;
+ const result=el('smartResult')||el('areaResult');if(!result)return;
  result.classList.add('show');result.replaceChildren();
  const wrap=document.createElement('div');
  const h=document.createElement('strong');h.textContent=matches.length?'Sorting assistant · '+matches[0].title:'Sorting assistant · '+q;wrap.append(h);
