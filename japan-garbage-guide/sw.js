@@ -1,5 +1,5 @@
-const CACHE_NAME = 'japan-garbage-guide-schedule-v11';
-const ASSETS = ['./', './index.html', './manifest.json', './ai-assistant.css', './ai-assistant.js', './smart-guide.js', './location-guide.js', './location-guide.css', './map-first-pro.css', './map-first-pro.js', './nearby-100m.js', './nearby-100m.css', './native-shell.css', './native-shell.js', './official-groups.js', './official-groups.css', './kobe-community-collections.json', './hyuga-clean-stations.json', './figma-polish.css', './figma-polish.js', './collection-planner.js', './collection-planner.css'];
+const CACHE_NAME = 'japan-garbage-guide-schedule-v12';
+const ASSETS = ['./', './index.html', './manifest.json', './ai-assistant.css', './ai-assistant.js', './smart-guide.js', './location-guide.js', './location-guide.css', './map-first-pro.css', './map-first-pro.js', './nearby-100m.js', './nearby-100m.css', './native-shell.css', './native-shell.js', './official-groups.js', './official-groups.css', './kobe-community-collections.json', './hyuga-clean-stations.json', './figma-polish.css', './figma-polish.js', './collection-planner.js', './collection-planner.css', './local-reminders.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
@@ -8,8 +8,8 @@ self.addEventListener('activate', event => {
 });
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
-  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+  event.respondWith(fetch(event.request).then(response => {
     if (response.ok) { const copy = response.clone(); caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)); }
     return response;
-  }).catch(() => caches.match('./index.html'))));
+  }).catch(() => caches.match(event.request).then(cached => cached || caches.match('./index.html')))));
 });
