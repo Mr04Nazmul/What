@@ -1,0 +1,12 @@
+{
+  "name": "Japan Garbage Guide",
+  "short_name": "Garbage Guide",
+  "description": "Multilingual guide to Japanese waste sorting and verified collection calendars.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7f2",
+  "theme_color": "#174c3d",
+  "lang": "en",
+  "icons": []
+}
