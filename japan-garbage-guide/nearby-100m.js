@@ -96,7 +96,7 @@ function start(){
 }
 function init(){
  const frame=byId("wasteMap"),wrapper=frame?.parentElement;if(!wrapper)return;
- const holder=document.createElement("div");holder.id="liveMap";holder.hidden=true;holder.setAttribute("aria-label","Live recycling and public bin map within 100 meters");wrapper.append(holder);
+ const holder=document.createElement("div");holder.id="liveMap";holder.hidden=false;holder.setAttribute("aria-label","Interactive map. Enable location to see public recycling points within 100 meters");wrapper.append(holder);if(frame)frame.hidden=true;document.body.classList.add("live-map-active");if(window.L){map=L.map(holder,{zoomControl:true}).setView([34.69,135.195],12);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:20}).addTo(map);layer=L.layerGroup().addTo(map);setTimeout(()=>map.invalidateSize(),300);}
  const panel=document.createElement("section");panel.className="live-point-section";panel.id="liveSection";
  const header=document.createElement("div");header.className="live-point-heading";
  const title=document.createElement("h3");title.textContent="Within 100 meters";
