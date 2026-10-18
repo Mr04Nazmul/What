@@ -1,5 +1,5 @@
-const CACHE_NAME = 'japan-garbage-guide-v2';
-const ASSETS = ['./', './index.html', './manifest.json', './app.js'];
+const CACHE_NAME = 'japan-garbage-guide-ai-v3';
+const ASSETS = ['./', './index.html', './manifest.json', './ai-assistant.css', './ai-assistant.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
