@@ -4,13 +4,13 @@
 const byId=id=>document.getElementById(id);
 const R=100;
 const endpoints=["https://overpass.kumi.systems/api/interpreter","https://overpass.nchc.org.tw/api/interpreter","https://overpass-api.de/api/interpreter"];
-let map=null, layer=null, circle=null, centerMarker=null, lastCoords=null, busy=false, reqNo=0, watchId=null, lastFetchAt=0, lastFetchPosition=null;
+let map=null, layer=null, circle=null, centerMarker=null, privateMarker=null, lastCoords=null, busy=false, reqNo=0, watchId=null, lastFetchAt=0, lastFetchPosition=null, placing=false;
 function distance(a,b,c,d){const rad=Math.PI/180,Rm=6371000,p=(c-a)*rad,q=(d-b)*rad;const v=Math.sin(p/2)**2+Math.cos(a*rad)*Math.cos(c*rad)*Math.sin(q/2)**2;return 2*Rm*Math.asin(Math.sqrt(v))}
-function labelFor(t){if(t.amenity==="recycling")return "♻️ Recycling drop-off";if(t.amenity==="waste_basket")return "🗑️ Public litter bin";if(t.amenity==="waste_disposal")return "🚮 Waste disposal point";return "Collection point"}
+function labelFor(t){if(t.name&&/ごみステーション|ゴミステーション|クリーンステーション|ごみ集積所|ゴミ集積所|ごみ置き場|ゴミ置き場|資源回収|集団回収/.test(t.name))return "🏠 Named waste collection station (verify permission)";if(t.amenity==="recycling")return "♻️ Recycling drop-off";if(t.amenity==="waste_basket")return "🗑️ Public litter bin";if(t.amenity==="waste_disposal")return "🚮 Waste disposal point";return "Collection point"}
 function types(t){const keys=Object.keys(t).filter(k=>k.startsWith("recycling:")&&t[k]==="yes").map(k=>k.slice(10).replace(/_/g," "));return keys.slice(0,5).join(", ")}
 function status(text){if(byId("locationState"))byId("locationState").textContent=text;const x=byId("liveMapStatus");if(x)x.textContent=text}
 function toNumber(n){return Number(n).toFixed(6)}
-function osmQuery(lat,lon){return '[out:json][timeout:22];(nwr(around:'+R+','+toNumber(lat)+','+toNumber(lon)+')["amenity"~"^(recycling|waste_basket|waste_disposal)$"];);out center tags;'}
+function osmQuery(lat,lon){const around="(around:"+R+","+toNumber(lat)+","+toNumber(lon)+")";return '[out:json][timeout:22];(nwr'+around+'["amenity"~"^(recycling|waste_basket|waste_disposal)$"];nwr'+around+'["name"~"ごみステーション|ゴミステーション|クリーンステーション|ごみ集積所|ゴミ集積所|ごみ置き場|ゴミ置き場|資源回収"];);out center tags;'}
 async function find(lat,lon){
  const q=osmQuery(lat,lon),my=++reqNo;busy=true;status("Checking live map data within 100 m…");
  let data=null,lastError=null;
@@ -35,14 +35,14 @@ async function find(lat,lon){
   const key=e.type+":"+e.id;if(meters>R||seen.has(key))return null;seen.add(key);
   return {lat:lat2,lon:lon2,meters,tags:e.tags||{},id:key};
  }).filter(Boolean).sort((a,b)=>a.meters-b.meters);
- draw(items,lat,lon);status(items.length+" mapped public point"+(items.length===1?"":"s")+" within 100 m · updated now");
+ draw(items,lat,lon);status(items.length?items.length+" mapped location"+(items.length===1?"":"s")+" within 100 m · updated now":"No matching places mapped within 100 m (not proof none exist)");
 }
 function renderMessage(message){const parent=byId("livePoints");if(!parent)return;parent.replaceChildren();const p=document.createElement("p");p.className="live-empty";p.textContent=message;parent.append(p)}
 function linkDirections(item){return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(item.lat+","+item.lon)+'&travelmode=walking'}
 function draw(items,lat,lon){
  if(layer)layer.clearLayers();
  const list=byId("livePoints");if(!list)return;list.replaceChildren();
- if(!items.length){renderMessage("No public recycling/bin points are mapped within 100 m in OpenStreetMap. Some real locations may be missing. Do not use an unverified residential garbage station.");return}
+ if(!items.length){renderMessage("No matching locations are mapped in OpenStreetMap within 100m. Your real neighborhood station may not be recorded. If you know your assigned station, save its position privately below.");return}
  for(const item of items){
   const label=item.tags.name||item.tags["name:en"]||labelFor(item.tags);
   const cat=labelFor(item.tags);
@@ -50,20 +50,33 @@ function draw(items,lat,lon){
   const article=document.createElement("article");article.className="live-point-card";
   const head=document.createElement("div");head.className="live-point-head";
   const title=document.createElement("strong");title.textContent=label;const dist=document.createElement("span");dist.textContent=item.meters+" m";head.append(title,dist);
-  const details=document.createElement("small");details.textContent=cat+(types(item.tags)?" · "+types(item.tags):"")+" · OpenStreetMap contributor data";
+  const details=document.createElement("small");details.textContent=cat+(types(item.tags)?" · "+types(item.tags):"")+" · OpenStreetMap data, access not verified";
   const a=document.createElement("a");a.textContent="Walking directions ↗";a.href=linkDirections(item);a.target="_blank";a.rel="noopener noreferrer";
   article.append(head,details,a);list.append(article);
  }
 }
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+const PRIVATE_KEY="jgg-private-assigned-station-v1";
+function savedStation(){try{const x=JSON.parse(localStorage.getItem(PRIVATE_KEY)||"null");return x&&Number.isFinite(x.lat)&&Number.isFinite(x.lon)?x:null}catch(e){return null}}
+function renderPrivate(){
+ const x=savedStation();const box=byId("privateStationStatus");if(box)box.textContent=x?"Your confirmed station is saved on this device only. It is not shared or public.":"No personal station saved.";
+ if(privateMarker&&map){map.removeLayer(privateMarker);privateMarker=null}
+ if(x&&map){privateMarker=L.circleMarker([x.lat,x.lon],{radius:10,color:"#fff",weight:3,fillColor:"#ec9f27",fillOpacity:1}).addTo(map).bindPopup("Your privately saved, personally confirmed station");}
+}
+function setMarkMode(){if(!map){status("Map not ready");return}placing=true;const b=byId("privateStationMark");if(b)b.textContent="Tap your assigned station on map";status("Tap your own confirmed garbage station on the map to save it privately.");}
+function saveAt(lat,lon){
+ if(!placing)return;placing=false;
+ try{localStorage.setItem(PRIVATE_KEY,JSON.stringify({lat,lon}))}catch(e){status("Could not save private station");return}
+ const b=byId("privateStationMark");if(b)b.textContent="Mark my confirmed station";renderPrivate();status("Personal station saved on this device, not sent to a public database");
+}
 function ensureMap(lat,lon){
  const frame=byId("wasteMap"),holder=byId("liveMap");if(!holder)return false;
  if(!window.L){status("Map tiles are still loading. Try again.");return false}
  document.body.classList.add("live-map-active");if(frame)frame.hidden=true;holder.hidden=false;
  if(!map){
-  map=L.map(holder,{zoomControl:true}).setView([lat,lon],18);
+  map=L.map(holder,{zoomControl:true}).setView([lat,lon],18);map.on("click",e=>saveAt(e.latlng.lat,e.latlng.lng));
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:20}).addTo(map);
-  layer=L.layerGroup().addTo(map);
+  layer=L.layerGroup().addTo(map);renderPrivate();
  }
  if(circle)map.removeLayer(circle);if(centerMarker)map.removeLayer(centerMarker);
  circle=L.circle([lat,lon],{radius:R,color:"#087a59",fillColor:"#12aa80",fillOpacity:0.10,weight:2}).addTo(map);
@@ -96,7 +109,7 @@ function start(){
 }
 function init(){
  const frame=byId("wasteMap"),wrapper=frame?.parentElement;if(!wrapper)return;
- const holder=document.createElement("div");holder.id="liveMap";holder.hidden=false;holder.setAttribute("aria-label","Interactive map. Enable location to see public recycling points within 100 meters");wrapper.append(holder);if(frame)frame.hidden=true;document.body.classList.add("live-map-active");if(window.L){map=L.map(holder,{zoomControl:true}).setView([34.69,135.195],12);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:20}).addTo(map);layer=L.layerGroup().addTo(map);setTimeout(()=>map.invalidateSize(),300);}
+ const holder=document.createElement("div");holder.id="liveMap";holder.hidden=false;holder.setAttribute("aria-label","Interactive map. Enable location to see public recycling points within 100 meters");wrapper.append(holder);if(frame)frame.hidden=true;document.body.classList.add("live-map-active");if(window.L){map=L.map(holder,{zoomControl:true}).setView([34.69,135.195],12);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:20}).addTo(map);layer=L.layerGroup().addTo(map);map.on("click",e=>saveAt(e.latlng.lat,e.latlng.lng));renderPrivate();setTimeout(()=>map.invalidateSize(),300);}
  const panel=document.createElement("section");panel.className="live-point-section";panel.id="liveSection";
  const header=document.createElement("div");header.className="live-point-heading";
  const title=document.createElement("h3");title.textContent="Within 100 meters";
@@ -108,6 +121,14 @@ function init(){
  const list=document.createElement("div");list.id="livePoints";
  const note=document.createElement("p");note.className="live-disclaimer";note.textContent="100 m is measured straight-line from GPS to mapped point. OpenStreetMap is community-maintained, so absence of results does not prove absence of a location. Availability, opening hours, accepted materials and disposal permission are not real-time verified.";
  panel.append(header,sub,accuracy,st,list,note);
+ const privateBox=document.createElement("div");privateBox.className="private-station-controls";
+ const heading=document.createElement("strong");heading.textContent="Your home garbage station (private)";
+ const help=document.createElement("p");help.textContent="Already know the residential station your building/neighbors assigned you? Tap Mark, then tap the spot on the map. Do not mark a place unless you are permitted to use it.";
+ const mark=document.createElement("button");mark.id="privateStationMark";mark.type="button";mark.textContent="Mark my confirmed station";mark.onclick=setMarkMode;
+ const clear=document.createElement("button");clear.id="privateStationClear";clear.type="button";clear.textContent="Remove saved pin";clear.onclick=()=>{try{localStorage.removeItem(PRIVATE_KEY)}catch(e){}renderPrivate()};
+ const stPriv=document.createElement("p");stPriv.id="privateStationStatus";
+ privateBox.append(heading,help,mark,clear,stPriv);panel.append(privateBox);
+ renderPrivate();
  wrapper.insertAdjacentElement("afterend",panel);
  window.JGGNearby100m={start,refresh:()=>lastCoords?find(lastCoords.lat,lastCoords.lon):start()};
  const button=byId("useLocation");if(button){button.textContent="◎ Show real places within 100 m";}
