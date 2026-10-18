@@ -11,8 +11,34 @@ function types(t){const keys=Object.keys(t).filter(k=>k.startsWith("recycling:")
 function status(text){if(byId("locationState"))byId("locationState").textContent=text;const x=byId("liveMapStatus");if(x)x.textContent=text}
 function toNumber(n){return Number(n).toFixed(6)}
 function osmQuery(lat,lon){const around="(around:"+R+","+toNumber(lat)+","+toNumber(lon)+")";return '[out:json][timeout:22];(nwr'+around+'["amenity"~"^(recycling|waste_basket|waste_disposal)$"];nwr'+around+'["name"~"ごみステーション|ゴミステーション|クリーンステーション|ごみ集積所|ゴミ集積所|ごみ置き場|ゴミ置き場|資源回収"];);out center tags;'}
+let hyugaDataPromise=null;
+function isHyuga(lat,lon){return lat>=32.2&&lat<=32.65&&lon>=131.3&&lon<=131.85}
+function officialData(){if(!hyugaDataPromise)hyugaDataPromise=fetch("./hyuga-clean-stations.json",{cache:"no-store"}).then(x=>{if(!x.ok)throw Error("official data failed");return x.json()}).catch(e=>{hyugaDataPromise=null;throw e});return hyugaDataPromise}
+async function findOfficialHyuga(lat,lon,my){
+ status("Checking official Hyūga City stations within 100m…");
+ try{
+ const data=await officialData();if(my!==reqNo)return;
+ const results=(data.stations||[]).map(p=>({...p,meters:Math.round(distance(lat,lon,p.lat,p.lon))})).filter(p=>p.meters<=R).sort((a,b)=>a.meters-b.meters);
+ if(layer)layer.clearLayers();
+ const list=byId("livePoints");if(list)list.replaceChildren();
+ const count=results.length;
+ status(count?count+" official Hyūga clean station"+(count===1?"":"s")+" within 100 m":"No official Hyūga clean station within 100 m in current dataset");
+ if(!count){renderMessage("No clean station in this 100m radius in Hyūga City official dataset. You may have a different assigned station; check your municipality.");return}
+ for(const p of results){
+   if(layer){const marker=L.circleMarker([p.lat,p.lon],{radius:8,color:"#fff",weight:2,fillColor:"#ed9c28",fillOpacity:1}).addTo(layer);marker.bindPopup(escapeHTML(p.name)+"<br>"+p.meters+"m · Hyūga official data");}
+   if(!list)continue;const card=document.createElement("article");card.className="live-point-card";
+   const head=document.createElement("div");head.className="live-point-head";
+   const strong=document.createElement("strong");strong.textContent=p.name||"クリーンステーション";
+   const span=document.createElement("span");span.textContent=p.meters+" m";head.append(strong,span);
+   const detail=document.createElement("small");detail.textContent="燃やせるごみ: "+(p.burnable||"未掲載")+" · 燃やせないごみ: "+(p.nonburnable||"未掲載")+" · プラ: "+(p.plastic||"未掲載");
+   const source=document.createElement("small");source.textContent="Official Hyūga City open data · Not a guarantee this is your assigned station.";
+   const link=document.createElement("a");link.textContent="Walking directions ↗";link.href=linkDirections(p);link.target="_blank";link.rel="noopener noreferrer";
+   card.append(head,detail,source,link);list.append(card);
+ }
+ }catch(e){status("Hyūga official data temporarily unavailable");renderMessage("Official station dataset unavailable. Try again later.")}
+}
 async function find(lat,lon){
- const q=osmQuery(lat,lon),my=++reqNo;busy=true;status("Checking live map data within 100 m…");
+ const my=++reqNo;busy=true;if(isHyuga(lat,lon)){await findOfficialHyuga(lat,lon,my);busy=false;return}const q=osmQuery(lat,lon);status("Checking live map data within 100 m…");
  let data=null,lastError=null;
  for(const endpoint of endpoints){
   try{
