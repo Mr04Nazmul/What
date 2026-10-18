@@ -24,8 +24,13 @@ jobs:
       - uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Stage the guide without changing other repository files
+        run: |
+          mkdir -p _site/japan-garbage-guide
+          cp -R japan-garbage-guide/. _site/japan-garbage-guide/
+          printf '<!doctype html><meta http-equiv="refresh" content="0;url=./japan-garbage-guide/"><a href="./japan-garbage-guide/">Open Japan Garbage Guide</a>' > _site/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: './japan-garbage-guide'
+          path: './_site'
       - id: deployment
         uses: actions/deploy-pages@v4
