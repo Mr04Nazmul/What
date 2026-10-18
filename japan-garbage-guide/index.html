@@ -30,6 +30,27 @@ a{ text-underline-offset:3px }a:hover{text-decoration-thickness:2px}
 .footer{padding-bottom:24px}
 @media(max-width:760px){.hero{padding:25px 20px}.hero h1{font-size:clamp(31px,9vw,43px)}.panel{border-radius:20px}.grid{gap:13px;margin-top:13px}.cards{gap:10px;margin-top:13px}.waste{padding:14px}.bottom-nav{width:calc(100% - 18px)}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Custom mobile-first polish inspired by open-source UI patterns. */
+:root{--shadow:0 16px 45px rgba(20,57,40,.075)}
+body{background:radial-gradient(ellipse at 8% 0%,#e2f3e6 0,transparent 34%),var(--paper);letter-spacing:-.012em}
+.app{max-width:1120px;padding:clamp(14px,3vw,30px)}
+.brand{letter-spacing:-.035em}.logo{box-shadow:0 8px 18px #164d3b30}
+.hero{background:linear-gradient(120deg,#10382e 0%,#18533f 54%,#247458 100%);border:1px solid #ffffff22;box-shadow:0 24px 55px #174c3d24}
+.hero:before{content:'';position:absolute;width:380px;height:380px;right:-110px;bottom:-230px;border:1px solid #ffffff24;border-radius:50%;box-shadow:0 0 0 35px #ffffff08,0 0 0 70px #ffffff06}
+.hero h1{letter-spacing:-.055em}.hero p{font-size:clamp(14px,1.5vw,16px);line-height:1.75}
+.search input{box-shadow:0 4px 16px #071f1818}.primary{transition:transform .18s ease,box-shadow .18s ease;box-shadow:0 7px 18px #071f1820}.primary:hover{transform:translateY(-2px);box-shadow:0 11px 24px #071f1830}
+.panel{box-shadow:var(--shadow);transition:transform .2s ease,border-color .2s ease}.panel:hover{border-color:#c6ddcd}
+.panel h2{letter-spacing:-.035em}.field input:focus,.field select:focus{outline:3px solid #c9ebd2;border-color:#76b98a}
+.actions button{transition:transform .16s ease,background .16s ease}.actions button:hover{transform:translateY(-1px);background:#eaf6ec}.actions button.dark:hover{background:#21654d}
+.waste{box-shadow:0 8px 22px #153d2708;transition:transform .18s ease,box-shadow .18s ease}.waste:hover{transform:translateY(-3px);box-shadow:0 14px 28px #153d2714}.emoji{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:#edf7ef}
+.notice{line-height:1.7}.result{line-height:1.7;border:1px solid #d7ead9}.status{white-space:nowrap}
+.bottom-nav{bottom:max(10px,env(safe-area-inset-bottom));box-shadow:0 10px 40px #132d2730;border-color:#d9e7dd}
+.bottom-nav button{min-height:48px;transition:background .18s ease}.more-menu{bottom:calc(80px + env(safe-area-inset-bottom));box-shadow:0 16px 40px #132d2730}
+.toast{z-index:20;bottom:calc(82px + env(safe-area-inset-bottom));box-shadow:0 8px 24px #123b3140}
+a{text-underline-offset:3px}a:hover{text-decoration-thickness:2px}.footer{padding-bottom:24px}
+@media(max-width:760px){.hero{padding:25px 20px}.hero h1{font-size:clamp(31px,9vw,43px)}.panel{border-radius:20px}.grid{gap:13px;margin-top:13px}.cards{gap:10px;margin-top:13px}.waste{padding:14px}.bottom-nav{width:calc(100% - 18px)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style></head>
 <body><main class="app">
 <header class="top"><div class="brand"><div class="logo">♻</div><div>Japan Garbage Guide<div style="font-size:11px;color:var(--muted);font-weight:600">A calmer way to sort waste</div></div></div><select id="lang" class="pill" aria-label="Language"><option value="en">🇬🇧 English</option><option value="bn">🇧🇩 বাংলা</option><option value="ja">🇯🇵 日本語</option><option value="hi">🇮🇳 हिन्दी</option><option value="vi">🇻🇳 Tiếng Việt</option><option value="ne">🇳🇵 नेपाली</option></select></header>
