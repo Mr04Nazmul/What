@@ -105,7 +105,7 @@ function setMarkMode(){if(!map){status("Map not ready");return}placing=true;cons
 function saveAt(lat,lon){
  if(!placing)return;placing=false;
  try{localStorage.setItem(PRIVATE_KEY,JSON.stringify({lat,lon}))}catch(e){status("Could not save private station");return}
- const b=byId("privateStationMark");if(b)b.textContent="Mark my confirmed station";renderPrivate();status("Personal station saved on this device, not sent to a public database");
+ const b=byId("privateStationMark");if(b)b.textContent="Mark my confirmed station";const quick=byId("quickMarkStation");if(quick)quick.textContent="✓ My station saved";renderPrivate();status("Personal station saved on this device, not sent to a public database");
 }
 function ensureMap(lat,lon){
  const frame=byId("wasteMap"),holder=byId("liveMap");if(!holder)return false;
@@ -168,6 +168,13 @@ function init(){
  privateBox.append(heading,help,mark,clear,stPriv);panel.append(privateBox);
  renderPrivate();
  wrapper.insertAdjacentElement("afterend",panel);
+ const quick=document.createElement("button");
+ quick.type="button";quick.id="quickMarkStation";quick.className="quick-mark-station";
+ quick.textContent="＋ Save my station";
+ quick.title="Mark your personally confirmed residential garbage station on the map, stored only on this device";
+ quick.addEventListener("click",()=>{setMarkMode();const b=byId("privateStationMark");if(b)b.textContent="Tap map to save your station";quick.textContent="Tap your station on map…";});
+ wrapper.append(quick);
+
  window.JGGNearby100m={start,refresh:()=>lastCoords?find(lastCoords.lat,lastCoords.lon):start()};
  const button=byId("useLocation");if(button){button.textContent="◎ Show real places within 100 m";}
 }
