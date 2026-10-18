@@ -153,7 +153,7 @@ function applyExtraLanguage(){
  document.querySelectorAll('.waste strong').forEach((e,i)=>{if(t.cats[i])e.textContent=t.cats[i]});
  document.querySelectorAll('.waste small').forEach((e,i)=>{if(t.descs[i])e.textContent=t.descs[i]});
  $('query').placeholder=t.query;$('ward').placeholder=t.ward;$('town').placeholder=t.town;
- document.querySelectorAll('.bottom-nav button').forEach((e,i)=>{if(t.nav[i])e.innerHTML=['⌂','▦','♻','⋯'][i]+'<br>'+t.nav[i]});
+ document.querySelectorAll('.bottom-nav button').forEach((e,i)=>{const words=[t.nav[0],({en:'Map',bn:'ম্যাপ',ja:'地図',hi:'नक्शा',vi:'Bản đồ',ne:'नक्सा'}[$('lang').value]||'Map'),t.nav[2],t.nav[1],t.nav[3]];const icons=['⌂','⌖','♻','▦','⋯'];if(words[i])e.innerHTML=icons[i]+'<br>'+words[i]});
  document.querySelectorAll('#moreMenu button').forEach((e,i)=>{if(t.menu[i])e.textContent=t.menu[i]});
 }
 $('lang').addEventListener('change',applyExtraLanguage);applyExtraLanguage();
