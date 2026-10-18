@@ -1,0 +1,110 @@
+/* Live public map: GPS + OpenStreetMap Overpass. Never guesses disposal sites. */
+(function(){
+"use strict";
+const byId=id=>document.getElementById(id);
+const R=100;
+const endpoints=["https://overpass.kumi.systems/api/interpreter","https://overpass.nchc.org.tw/api/interpreter","https://overpass-api.de/api/interpreter"];
+let map=null, layer=null, circle=null, centerMarker=null, lastCoords=null, busy=false, reqNo=0;
+function distance(a,b,c,d){const rad=Math.PI/180,Rm=6371000,p=(c-a)*rad,q=(d-b)*rad;const v=Math.sin(p/2)**2+Math.cos(a*rad)*Math.cos(c*rad)*Math.sin(q/2)**2;return 2*Rm*Math.asin(Math.sqrt(v))}
+function labelFor(t){if(t.amenity==="recycling")return "♻️ Recycling drop-off";if(t.amenity==="waste_basket")return "🗑️ Public litter bin";if(t.amenity==="waste_disposal")return "🚮 Waste disposal point";return "Collection point"}
+function types(t){const keys=Object.keys(t).filter(k=>k.startsWith("recycling:")&&t[k]==="yes").map(k=>k.slice(10).replace(/_/g," "));return keys.slice(0,5).join(", ")}
+function status(text){if(byId("locationState"))byId("locationState").textContent=text;const x=byId("liveMapStatus");if(x)x.textContent=text}
+function toNumber(n){return Number(n).toFixed(6)}
+function osmQuery(lat,lon){return '[out:json][timeout:22];(nwr(around:'+R+','+toNumber(lat)+','+toNumber(lon)+')["amenity"~"^(recycling|waste_basket|waste_disposal)$"];);out center tags;'}
+async function find(lat,lon){
+ const q=osmQuery(lat,lon),my=++reqNo;busy=true;status("Checking live map data within 100 m…");
+ let data=null,lastError=null;
+ for(const endpoint of endpoints){
+  try{
+   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),11000);
+   try{
+    const response=await fetch(endpoint,{method:"POST",body:new URLSearchParams({data:q}),headers:{"Content-Type":"application/x-www-form-urlencoded"},signal:controller.signal,cache:"no-store"});
+    if(!response.ok)throw new Error("Map provider "+response.status);
+    data=await response.json();break;
+   }finally{clearTimeout(timer)}
+  }catch(e){lastError=e}
+ }
+ if(my!==reqNo)return;
+ busy=false;
+ if(!data){status("Live map service unavailable. Retry in a moment.");renderMessage("Could not load live public map data. This is not a zero-results confirmation.");return}
+ const seen=new Set();
+ const items=(data.elements||[]).map(e=>{
+  const lat2=e.lat??e.center?.lat,lon2=e.lon??e.center?.lon;
+  if(!Number.isFinite(lat2)||!Number.isFinite(lon2))return null;
+  const meters=Math.round(distance(lat,lon,lat2,lon2));
+  const key=e.type+":"+e.id;if(meters>R||seen.has(key))return null;seen.add(key);
+  return {lat:lat2,lon:lon2,meters,tags:e.tags||{},id:key};
+ }).filter(Boolean).sort((a,b)=>a.meters-b.meters);
+ draw(items,lat,lon);status(items.length+" mapped public point"+(items.length===1?"":"s")+" within 100 m · updated now");
+}
+function renderMessage(message){const parent=byId("livePoints");if(!parent)return;parent.replaceChildren();const p=document.createElement("p");p.className="live-empty";p.textContent=message;parent.append(p)}
+function linkDirections(item){return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(item.lat+","+item.lon)+'&travelmode=walking'}
+function draw(items,lat,lon){
+ if(layer)layer.clearLayers();
+ const list=byId("livePoints");if(!list)return;list.replaceChildren();
+ if(!items.length){renderMessage("No public recycling/bin points are mapped within 100 m in OpenStreetMap. Some real locations may be missing. Do not use an unverified residential garbage station.");return}
+ for(const item of items){
+  const label=item.tags.name||item.tags["name:en"]||labelFor(item.tags);
+  const cat=labelFor(item.tags);
+  if(layer){const marker=L.circleMarker([item.lat,item.lon],{radius:8,color:"#fff",weight:2,fillColor:"#0b795a",fillOpacity:1}).addTo(layer);marker.bindPopup('<strong>'+escapeHTML(label)+'</strong><br>'+item.meters+' m · '+escapeHTML(cat));}
+  const article=document.createElement("article");article.className="live-point-card";
+  const head=document.createElement("div");head.className="live-point-head";
+  const title=document.createElement("strong");title.textContent=label;const dist=document.createElement("span");dist.textContent=item.meters+" m";head.append(title,dist);
+  const details=document.createElement("small");details.textContent=cat+(types(item.tags)?" · "+types(item.tags):"")+" · OpenStreetMap contributor data";
+  const a=document.createElement("a");a.textContent="Walking directions ↗";a.href=linkDirections(item);a.target="_blank";a.rel="noopener noreferrer";
+  article.append(head,details,a);list.append(article);
+ }
+}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function ensureMap(lat,lon){
+ const frame=byId("wasteMap"),holder=byId("liveMap");if(!holder)return false;
+ if(!window.L){status("Map tiles are still loading. Try again.");return false}
+ document.body.classList.add("live-map-active");if(frame)frame.hidden=true;holder.hidden=false;
+ if(!map){
+  map=L.map(holder,{zoomControl:true}).setView([lat,lon],18);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:20}).addTo(map);
+  layer=L.layerGroup().addTo(map);
+ }
+ if(circle)map.removeLayer(circle);if(centerMarker)map.removeLayer(centerMarker);
+ circle=L.circle([lat,lon],{radius:R,color:"#087a59",fillColor:"#12aa80",fillOpacity:0.10,weight:2}).addTo(map);
+ centerMarker=L.circleMarker([lat,lon],{radius:9,color:"#fff",weight:3,fillColor:"#2987ff",fillOpacity:1}).addTo(map).bindPopup("Your approximate GPS location");
+ map.setView([lat,lon],18);setTimeout(()=>map.invalidateSize(),90);
+ return true;
+}
+function onPosition(p){
+ const lat=p.coords.latitude,lon=p.coords.longitude,accuracy=Math.round(p.coords.accuracy);
+ lastCoords={lat,lon};byId("useLocation").disabled=false;
+ byId("useLocation").textContent="↻ Refresh 100 m nearby";
+ const hint=byId("liveAccuracy");if(hint)hint.textContent="GPS accuracy ±"+accuracy+" m. Distances are straight-line, not walking distances.";
+ const link=byId("openNearbyMap");if(link){link.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("recycling center near "+lat+","+lon)}
+ if(!ensureMap(lat,lon))return;
+ find(lat,lon);
+}
+function start(){
+ if(!navigator.geolocation){status("This device does not support GPS.");return}
+ status("Requesting GPS permission…");const btn=byId("useLocation");if(btn)btn.disabled=true;
+ navigator.geolocation.getCurrentPosition(onPosition,e=>{
+  if(btn)btn.disabled=false;
+  status(e.code===1?"Location permission denied. Enable GPS for this site in browser settings.":e.code===2?"GPS position unavailable.":"GPS timed out. Try again.");
+ },{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+}
+function init(){
+ const frame=byId("wasteMap"),wrapper=frame?.parentElement;if(!wrapper)return;
+ const holder=document.createElement("div");holder.id="liveMap";holder.hidden=true;holder.setAttribute("aria-label","Live recycling and public bin map within 100 meters");wrapper.append(holder);
+ const panel=document.createElement("section");panel.className="live-point-section";panel.id="liveSection";
+ const header=document.createElement("div");header.className="live-point-heading";
+ const title=document.createElement("h3");title.textContent="Within 100 meters";
+ const tag=document.createElement("span");tag.textContent="LIVE MAP DATA";
+ header.append(title,tag);
+ const sub=document.createElement("p");sub.textContent="Nearby mapped recycling drop-offs and public bins, not private residential garbage stations.";
+ const accuracy=document.createElement("p");accuracy.id="liveAccuracy";accuracy.className="live-accuracy";accuracy.textContent="Tap Use My Location to search live map data.";
+ const st=document.createElement("p");st.id="liveMapStatus";st.setAttribute("role","status");st.className="live-accuracy";
+ const list=document.createElement("div");list.id="livePoints";
+ const note=document.createElement("p");note.className="live-disclaimer";note.textContent="100 m is measured straight-line from GPS to mapped point. OpenStreetMap is community-maintained, so absence of results does not prove absence of a location. Availability, opening hours, accepted materials and disposal permission are not real-time verified.";
+ panel.append(header,sub,accuracy,st,list,note);
+ wrapper.insertAdjacentElement("afterend",panel);
+ window.JGGNearby100m={start,refresh:()=>lastCoords?find(lastCoords.lat,lastCoords.lon):start()};
+ const button=byId("useLocation");if(button){button.textContent="◎ Show real places within 100 m";}
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+})();
