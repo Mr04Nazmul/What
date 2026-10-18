@@ -1,0 +1,134 @@
+{
+  "dataset": "Kobe City public community recyclable group collections",
+  "scope": "Partial records for selected Nagata-ku neighborhoods; not a complete clean station map",
+  "note": "These are member/area-restricted recyclable group collections; not permission to dispose of general household garbage. Addresses are textual descriptions from official source pages and are NOT geocoded. Never imply GPS 100m proximity.",
+  "groups": [
+    {
+      "id": "groupF200051",
+      "name": "二葉婦人会",
+      "ward": "長田区",
+      "areas": [
+        "腕塚町",
+        "久保町",
+        "二葉町"
+      ],
+      "eligibility": "腕塚町5～8丁目・久保町5～8丁目・二葉町5～8丁目",
+      "schedule": "第1火曜日 7:00～8:00",
+      "materials": "新聞・雑紙・段ボール・古着・古布・アルミ缶・牛乳パック",
+      "locations": [
+        "二葉町6丁目1 久二塚公園",
+        "腕塚町5丁目5 アスタ住宅前",
+        "二葉町8丁目 岡本工務店前"
+      ],
+      "source": "https://www.city.kobe.lg.jp/life/recycle/waketon/shirumanabu/dantai/groupF200051.html",
+      "sourceLastUpdated": "2026-10-06",
+      "type": "Neighborhood resource group collection only—not general household rubbish",
+      "city": "神戸市"
+    },
+    {
+      "id": "groupF200071",
+      "name": "長楽婦人会",
+      "ward": "長田区",
+      "areas": [
+        "二葉町",
+        "久保町",
+        "野田町",
+        "海運町",
+        "本庄町",
+        "長楽町",
+        "浪松町",
+        "腕塚町"
+      ],
+      "eligibility": "旧長楽小学校区および腕塚町9・10丁目。公式ページ参照",
+      "schedule": "第4火曜日 6:00～8:00",
+      "materials": "新聞・雑紙・段ボール・古着・古布・アルミ缶",
+      "locations": [
+        "野田町5丁目1 長楽公園前",
+        "腕塚町9丁目 交差点北西角",
+        "二葉町9丁目8 まるよし工務店南",
+        "海運町8丁目6 高松線沿東角ガレージ",
+        "本庄町8丁目 西側"
+      ],
+      "source": "https://www.city.kobe.lg.jp/life/recycle/waketon/shirumanabu/dantai/groupF200071.html",
+      "sourceLastUpdated": "2026-10-06",
+      "type": "Neighborhood resource group collection only—not general household rubbish",
+      "city": "神戸市"
+    },
+    {
+      "id": "groupF500031",
+      "name": "神戸市立真陽小学校PTA",
+      "ward": "長田区",
+      "areas": [
+        "庄田町",
+        "久保町",
+        "腕塚町",
+        "二葉町"
+      ],
+      "eligibility": "長田区庄田町・久保町・腕塚町・二葉町。対象地域の確認が必要",
+      "schedule": "第3木曜日 7:40～8:00",
+      "materials": "新聞・雑紙・段ボール・古着・古布・アルミ缶",
+      "locations": [
+        "庄田町3丁目 郵便ポスト",
+        "久保町3丁目 本町筋山口時計店前",
+        "腕塚町2丁目 三井住友銀行前",
+        "二葉町1丁目 真陽小学校正門",
+        "二葉町1丁目 真陽小学校北門"
+      ],
+      "source": "https://www.city.kobe.lg.jp/life/recycle/waketon/shirumanabu/dantai/groupF500031.html",
+      "sourceLastUpdated": "2026-10-06",
+      "type": "Neighborhood resource group collection only—not general household rubbish",
+      "city": "神戸市"
+    },
+    {
+      "id": "groupF100221",
+      "name": "片山町3・4・5丁目自治会",
+      "ward": "長田区",
+      "areas": [
+        "片山町"
+      ],
+      "eligibility": "長田区片山町3～5丁目",
+      "schedule": "第1月曜日 6:00～9:00",
+      "materials": "新聞・雑紙・段ボール・古着・古布・アルミ缶",
+      "locations": [
+        "片山町5丁目9 クリーンステーション15-506",
+        "片山町5丁目8 クリーンステーション15-504",
+        "片山町5丁目7 クリーンステーション15-503",
+        "片山町5丁目1 クリーンステーション15-502",
+        "片山町4丁目2 クリーンステーション15-404",
+        "片山町5丁目7 クリーンステーション15-507",
+        "片山町3丁目11 クリーンステーション15-309",
+        "片山町4丁目2 クリーンステーション15-403",
+        "片山町4丁目2 クリーンステーション15-401",
+        "片山町3丁目5 クリーンステーション15-310",
+        "片山町3丁目8 クリーンステーション15-305",
+        "片山町3丁目11 クリーンステーション15-306",
+        "片山町3丁目7 クリーンステーション15-304",
+        "片山町3丁目2 クリーンステーション15-303",
+        "片山町3丁目4 クリーンステーション15-301",
+        "片山町5丁目2 クリーンステーション151-501"
+      ],
+      "source": "https://www.city.kobe.lg.jp/life/recycle/waketon/shirumanabu/dantai/groupF100221.html",
+      "sourceLastUpdated": "2026-10-06",
+      "type": "Neighborhood resource group collection only—not general household rubbish",
+      "city": "神戸市"
+    },
+    {
+      "id": "groupF101311",
+      "name": "神楽六自治会",
+      "ward": "長田区",
+      "areas": [
+        "神楽町"
+      ],
+      "eligibility": "神楽町6丁目町内",
+      "schedule": "第1・第3土曜日 8:00～12:00",
+      "materials": "新聞・雑紙・段ボール",
+      "locations": [
+        "神楽町6丁目 ミニ公園横クリーンステーション"
+      ],
+      "source": "https://www.city.kobe.lg.jp/life/recycle/waketon/shirumanabu/dantai/groupF101311.html",
+      "sourceLastUpdated": "2025-10-10",
+      "type": "Neighborhood resource group collection only—not general household rubbish",
+      "city": "神戸市"
+    }
+  ]
+}
