@@ -51,6 +51,10 @@ jobs:
             adb install -r student-wallet-android/android/app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -n com.studentwallet.pro/.MainActivity
             sleep 30
+            adb shell screencap -p /sdcard/student-wallet-app-open-ad.png
+            adb pull /sdcard/student-wallet-app-open-ad.png emulator-screenshots/student-wallet-app-open-ad.png
+            adb shell input keyevent 4
+            sleep 2
             adb logcat -d -v time | grep -iE 'Wallet AdMob|admob|ads\.internal|Ads\.AppOpen|Ads\.Interstitial|Consent' | tail -250 > emulator-screenshots/admob-log.txt || true
             adb shell dumpsys activity activities | tail -100 > emulator-screenshots/activity.txt
             sleep 2
@@ -66,9 +70,14 @@ jobs:
             adb pull /sdcard/student-wallet-shifts.png emulator-screenshots/student-wallet-shifts.png
             adb shell input tap 875 2200
             sleep 3
+            adb shell screencap -p /sdcard/student-wallet-interstitial-ad.png
+            adb pull /sdcard/student-wallet-interstitial-ad.png emulator-screenshots/student-wallet-interstitial-ad.png
+            adb shell input keyevent 4
+            sleep 2
             adb shell screencap -p /sdcard/student-wallet-goals.png
             adb pull /sdcard/student-wallet-goals.png emulator-screenshots/student-wallet-goals.png
             adb logcat -d -t 5000 > emulator-screenshots/logcat.txt
+            adb logcat -d -v time | grep -iE 'Wallet AdMob|App Open|Interstitial|AdMob|MobileAds' | tail -300 > emulator-screenshots/admob-final-log.txt || true
       - name: Upload emulator screenshots
         if: always()
         uses: actions/upload-artifact@v4
