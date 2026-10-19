@@ -24,8 +24,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Verify runner Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          test -d "$ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms" || true
       - name: Prepare offline wallet assets
         run: |
           test -s student-wallet/index.html
