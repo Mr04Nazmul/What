@@ -1,0 +1,38 @@
+name: Build Student Wallet Pro Android APK
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'student-wallet/index.html'
+      - 'student-wallet-android/**'
+      - '.github/workflows/student-wallet-android.yml'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: student-wallet-android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - name: Bundle current offline wallet UI
+        run: cp ../student-wallet/index.html www/index.html
+      - name: Install Capacitor
+        run: npm install
+      - name: Generate native Android project
+        run: npx cap add android
+      - name: Build debug APK
+        run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Student-Wallet-Pro-debug-apk
+          path: student-wallet-android/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
