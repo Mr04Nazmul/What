@@ -3,7 +3,8 @@
 // Real AdMob units (configured but NOT used by CI demo builds):
 // Interstitial: ca-app-pub-3728341118830943/1198902066
 // App Open:     ca-app-pub-3728341118830943/8989762173
-import { Capacitor, App } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
 import { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents, AppOpenAdPluginEvents } from '@capacitor-community/admob';
 
 const DEMO_INTERSTITIAL = 'ca-app-pub-3940256099942544/1033173712';
