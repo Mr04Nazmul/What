@@ -47,14 +47,21 @@ jobs:
             adb install -r student-wallet-android/android/app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -n com.studentwallet.pro/.MainActivity
             sleep 12
-            adb shell input tap 180 1750 || true
             sleep 2
             adb shell screencap -p /sdcard/student-wallet-home.png
             adb pull /sdcard/student-wallet-home.png emulator-screenshots/student-wallet-home.png
-            adb shell input tap 365 2010 || true
+            adb shell input tap 330 1770
             sleep 3
-            adb shell screencap -p /sdcard/student-wallet-second.png
-            adb pull /sdcard/student-wallet-second.png emulator-screenshots/student-wallet-second.png
+            adb shell screencap -p /sdcard/student-wallet-transactions.png
+            adb pull /sdcard/student-wallet-transactions.png emulator-screenshots/student-wallet-transactions.png
+            adb shell input tap 535 1770
+            sleep 3
+            adb shell screencap -p /sdcard/student-wallet-shifts.png
+            adb pull /sdcard/student-wallet-shifts.png emulator-screenshots/student-wallet-shifts.png
+            adb shell input tap 730 1770
+            sleep 3
+            adb shell screencap -p /sdcard/student-wallet-goals.png
+            adb pull /sdcard/student-wallet-goals.png emulator-screenshots/student-wallet-goals.png
             adb logcat -d -t 3000 > emulator-screenshots/logcat.txt
       - name: Upload emulator screenshots
         if: always()
