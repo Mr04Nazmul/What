@@ -53,8 +53,9 @@ jobs:
             sleep 30
             adb shell screencap -p /sdcard/student-wallet-app-open-ad.png
             adb pull /sdcard/student-wallet-app-open-ad.png emulator-screenshots/student-wallet-app-open-ad.png
-            adb shell input keyevent 4
-            sleep 2
+            # Google's App Open test creative uses an explicit Continue to app control
+            adb shell input tap 1000 55
+            sleep 4
             adb logcat -d -v time | grep -iE 'Wallet AdMob|admob|ads\.internal|Ads\.AppOpen|Ads\.Interstitial|Consent' | tail -250 > emulator-screenshots/admob-log.txt || true
             adb shell dumpsys activity activities | tail -100 > emulator-screenshots/activity.txt
             sleep 2
