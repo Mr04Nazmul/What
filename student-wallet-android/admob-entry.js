@@ -3,7 +3,8 @@
 // Real AdMob units (configured but NOT used by CI demo builds):
 // Interstitial: ca-app-pub-3728341118830943/1198902066
 // App Open:     ca-app-pub-3728341118830943/8989762173
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
+const WalletAppOpen = registerPlugin('WalletAppOpen');
 import { App } from '@capacitor/app';
 import { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents } from '@capacitor-community/admob';
 
@@ -32,7 +33,7 @@ async function loadInterstitial() {
 }
 async function loadAppOpen() {
   try {
-    await AdMob.loadAppOpen({ adId: APP_OPEN_ID });
+    await WalletAppOpen.load({ adId: APP_OPEN_ID });
     appOpenReady = true;
     log('App Open loaded');
   } catch (e) {
@@ -45,7 +46,7 @@ async function showAppOpenWhenReady() {
   try {
     adShowing = true;
     appOpenReady = false;
-    await AdMob.showAppOpen({ adId: APP_OPEN_ID });
+    await WalletAppOpen.show();
     lastShownAt = Date.now();
     log('App Open shown');
   } catch (e) {
@@ -55,10 +56,11 @@ async function showAppOpenWhenReady() {
 }
 async function showInterstitialOnNaturalBreak() {
   // Never interrupt forms, financial entries, or the first two tab transitions.
-  if (!interstitialReady || adShowing || Date.now() - lastShownAt < 180000) return;
+  if (!interstitialReady || adShowing || Date.now() - lastShownAt < 180000) { log('Interstitial skipped (not loaded, busy, or cooldown)'); return; }
   try {
     adShowing = true;
     interstitialReady = false;
+    log('Interstitial showing');
     await AdMob.showInterstitial({ adId: INTERSTITIAL_ID });
     lastShownAt = Date.now();
     log('Interstitial shown');
@@ -92,14 +94,14 @@ async function initAds() {
       adShowing = false; console.warn('[Wallet AdMob] Interstitial show error', error);
     });
     await AdMob.addListener(InterstitialAdPluginEvents.FailedToLoad, error => console.warn('[Wallet AdMob] Interstitial load error', error));
-    await AdMob.addListener('appOpenAdClosed', () => {
+    await WalletAppOpen.addListener('closed', () => {
       adShowing = false;
       loadAppOpen();
     });
-    await AdMob.addListener('appOpenAdFailedToShow', error => {
+    await WalletAppOpen.addListener('failedToShow', error => {
       adShowing = false; console.warn('[Wallet AdMob] App Open show error', error);
     });
-    await AdMob.addListener('appOpenAdFailedToLoad', error => console.warn('[Wallet AdMob] App Open load error', error));
+    await WalletAppOpen.addListener('failed', error => console.warn('[Wallet AdMob] App Open load error', error));
     await loadInterstitial();
     await loadAppOpen();
     // App Open belongs at app load / foreground return, not each tab click.
