@@ -1,0 +1,8 @@
+{
+  "appId": "com.studentwallet.pro",
+  "appName": "Student Wallet Pro",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}
