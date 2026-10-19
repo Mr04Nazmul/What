@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/student-wallet-emulator.yml'
+      - 'student-wallet-android/**'
 permissions:
   contents: read
 jobs:
@@ -30,6 +31,8 @@ jobs:
           cd student-wallet-android
           npm install --no-audit --no-fund
           npx cap add android
+          npm run ads:bundle
+          node prepare-ads.cjs
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
