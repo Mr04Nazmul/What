@@ -11,6 +11,7 @@ import { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents } from '@capacito
 const DEMO_INTERSTITIAL = 'ca-app-pub-3940256099942544/1033173712';
 const DEMO_APP_OPEN = 'ca-app-pub-3940256099942544/9257395921';
 const USE_DEMO = true; // Do not disable for emulator, debug builds, or automated testing.
+const MIN_AD_GAP_MS = USE_DEMO ? 0 : 180000;
 const INTERSTITIAL_ID = USE_DEMO ? DEMO_INTERSTITIAL : 'ca-app-pub-3728341118830943/1198902066';
 const APP_OPEN_ID = USE_DEMO ? DEMO_APP_OPEN : 'ca-app-pub-3728341118830943/8989762173';
 const log = (msg, data) => console.info('[Wallet AdMob] ' + msg, data || '');
@@ -46,6 +47,7 @@ async function showAppOpenWhenReady() {
   try {
     adShowing = true;
     appOpenReady = false;
+    log('App Open showing');
     await WalletAppOpen.show();
     lastShownAt = Date.now();
     log('App Open shown');
@@ -56,7 +58,7 @@ async function showAppOpenWhenReady() {
 }
 async function showInterstitialOnNaturalBreak() {
   // Never interrupt forms, financial entries, or the first two tab transitions.
-  if (!interstitialReady || adShowing || Date.now() - lastShownAt < 180000) { log('Interstitial skipped (not loaded, busy, or cooldown)'); return; }
+  if (!interstitialReady || adShowing || Date.now() - lastShownAt < MIN_AD_GAP_MS) { log('Interstitial skipped (not loaded, busy, or cooldown)'); return; }
   try {
     adShowing = true;
     interstitialReady = false;
@@ -109,7 +111,7 @@ async function initAds() {
     await App.addListener('appStateChange', async state => {
       if (!state.isActive) return;
       foregroundCount++;
-      if (foregroundCount > 0 && Date.now() - lastShownAt > 180000) await showAppOpenWhenReady();
+      if (foregroundCount > 0 && Date.now() - lastShownAt > MIN_AD_GAP_MS) await showAppOpenWhenReady();
     });
     const nav = document.querySelector('.nav');
     if (nav) {
