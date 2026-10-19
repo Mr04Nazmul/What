@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
-      PLAY_VERSION_CODE: '1'
+      PLAY_VERSION_CODE: '2'
       WALLET_RELEASE: '1'
       KEYSTORE_BASE64: ${{ secrets.PLAY_UPLOAD_KEYSTORE_BASE64 }}
       STORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_STORE_PASSWORD }}

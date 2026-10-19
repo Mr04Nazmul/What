@@ -5,6 +5,7 @@ const path = require('node:path');
 const root = __dirname;
 const variablesPath = path.join(root, 'android/variables.gradle');
 let vars = fs.readFileSync(variablesPath, 'utf8');
+vars = vars.replace(/minSdkVersion\s*=\s*\d+/, 'minSdkVersion = 24');
 vars = vars.replace(/compileSdkVersion\s*=\s*\d+/, 'compileSdkVersion = 36');
 vars = vars.replace(/targetSdkVersion\s*=\s*\d+/, 'targetSdkVersion = 36');
 fs.writeFileSync(variablesPath, vars);
