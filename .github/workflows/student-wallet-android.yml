@@ -1,4 +1,4 @@
-name: Build Student Wallet Pro Android APK
+name: Build Student Wallet Pro Android APK and AAB
 on:
   workflow_dispatch:
   push:
@@ -29,7 +29,13 @@ jobs:
       - name: Generate native Android project
         run: npx cap add android
       - name: Build debug APK
-        run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+        run: cd android && chmod +x gradlew && ./gradlew assembleDebug bundleRelease --no-daemon
+      - name: Upload unsigned release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: Student-Wallet-Pro-unsigned-release-aab
+          path: student-wallet-android/android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
