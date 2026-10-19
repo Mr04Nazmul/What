@@ -4,7 +4,8 @@ const path = require('node:path');
 const base = __dirname;
 const manifest = path.join(base, 'android/app/src/main/AndroidManifest.xml');
 let xml = fs.readFileSync(manifest, 'utf8');
-const appId = 'ca-app-pub-3940256099942544~3347511713'; // Google demo App ID: emulator/debug ONLY. Production must switch to own ID and configured consent.
+const production = process.env.WALLET_RELEASE === '1';
+const appId = production ? 'ca-app-pub-3728341118830943~5026466433' : 'ca-app-pub-3940256099942544~3347511713';
 if (!xml.includes('com.google.android.gms.ads.APPLICATION_ID')) {
   xml = xml.replace(/<application\b/, '<application android:usesCleartextTraffic="false"');
   // AndroidManifest may already contain usesCleartextTraffic; avoid duplicate attributes.
@@ -30,4 +31,4 @@ if (!gradle.includes('com.google.android.gms:play-services-ads:')) {
   gradle += '\n// Required by the native Student Wallet App Open Ad plugin\ndependencies { implementation "com.google.android.gms:play-services-ads:24.6.0" }\n';
   fs.writeFileSync(gradlePath, gradle);
 }
-console.log('Android AdMob App ID + App Open / Interstitial demo script configured');
+console.log('Android AdMob mode configured: ' + (production ? 'production (consent required)' : 'Google test only'));
