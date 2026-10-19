@@ -19,4 +19,9 @@ if (!html.includes('/admob.js')) {
   html = html.replace('</head>', inject + '</head>');
   fs.writeFileSync(htmlPath, html);
 }
+const nativeDir = path.join(base, 'android/app/src/main/java/com/studentwallet/pro');
+fs.mkdirSync(nativeDir, { recursive: true });
+for (const file of ['MainActivity.java', 'WalletAppOpenPlugin.java']) {
+  fs.copyFileSync(path.join(base, 'native', file), path.join(nativeDir, file));
+}
 console.log('Android AdMob App ID + App Open / Interstitial demo script configured');
