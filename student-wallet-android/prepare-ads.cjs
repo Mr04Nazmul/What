@@ -24,4 +24,10 @@ fs.mkdirSync(nativeDir, { recursive: true });
 for (const file of ['MainActivity.java', 'WalletAppOpenPlugin.java']) {
   fs.copyFileSync(path.join(base, 'native', file), path.join(nativeDir, file));
 }
+const gradlePath = path.join(base, 'android/app/build.gradle');
+let gradle = fs.readFileSync(gradlePath, 'utf8');
+if (!gradle.includes('com.google.android.gms:play-services-ads:')) {
+  gradle += '\n// Required by the native Student Wallet App Open Ad plugin\ndependencies { implementation "com.google.android.gms:play-services-ads:24.6.0" }\n';
+  fs.writeFileSync(gradlePath, gradle);
+}
 console.log('Android AdMob App ID + App Open / Interstitial demo script configured');
