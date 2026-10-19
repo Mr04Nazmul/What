@@ -50,7 +50,9 @@ jobs:
             mkdir -p emulator-screenshots
             adb install -r student-wallet-android/android/app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -n com.studentwallet.pro/.MainActivity
-            sleep 12
+            sleep 30
+            adb logcat -d -v time | grep -iE 'Wallet AdMob|admob|ads\.internal|Ads\.AppOpen|Ads\.Interstitial|Consent' | tail -250 > emulator-screenshots/admob-log.txt || true
+            adb shell dumpsys activity activities | tail -100 > emulator-screenshots/activity.txt
             sleep 2
             adb shell screencap -p /sdcard/student-wallet-home.png
             adb pull /sdcard/student-wallet-home.png emulator-screenshots/student-wallet-home.png
@@ -66,7 +68,7 @@ jobs:
             sleep 3
             adb shell screencap -p /sdcard/student-wallet-goals.png
             adb pull /sdcard/student-wallet-goals.png emulator-screenshots/student-wallet-goals.png
-            adb logcat -d -t 3000 > emulator-screenshots/logcat.txt
+            adb logcat -d -t 5000 > emulator-screenshots/logcat.txt
       - name: Upload emulator screenshots
         if: always()
         uses: actions/upload-artifact@v4
