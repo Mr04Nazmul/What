@@ -27,7 +27,7 @@ public class WalletAppOpenPlugin extends Plugin {
                     call.resolve();
                 }
                 @Override public void onAdFailedToLoad(LoadAdError error) {
-                    notifyListeners("failed", new JSObject().put("error", error.toString()));
+                    JSObject details = new JSObject(); details.put("error", error.toString()); notifyListeners("failed", details);
                     call.reject(error.toString());
                 }
             }));
@@ -43,7 +43,7 @@ public class WalletAppOpenPlugin extends Plugin {
                     notifyListeners("closed", new JSObject());
                 }
                 @Override public void onAdFailedToShowFullScreenContent(AdError error) {
-                    notifyListeners("failedToShow", new JSObject().put("error", error.toString()));
+                    JSObject details = new JSObject(); details.put("error", error.toString()); notifyListeners("failedToShow", details);
                 }
                 @Override public void onAdShowedFullScreenContent() {
                     notifyListeners("shown", new JSObject());
