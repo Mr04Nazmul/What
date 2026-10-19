@@ -71,13 +71,17 @@ async function initAds() {
   if (Capacitor.getPlatform() !== 'android' || initialized) return;
   initialized = true;
   try {
-    let consent = await AdMob.requestConsentInfo();
-    if (consent.isConsentFormAvailable && consent.status === AdmobConsentStatus.REQUIRED) {
-      consent = await AdMob.showConsentForm();
-    }
-    if (!consent.canRequestAds) {
-      log('Ads skipped: consent not ready');
-      return;
+    if (!USE_DEMO) {
+      let consent = await AdMob.requestConsentInfo();
+      if (consent.isConsentFormAvailable && consent.status === AdmobConsentStatus.REQUIRED) {
+        consent = await AdMob.showConsentForm();
+      }
+      if (!consent.canRequestAds) {
+        log('Production ads withheld: consent not ready');
+        return;
+      }
+    } else {
+      log('Demo-only build: Google test app/unit IDs; no live ad requests');
     }
     await AdMob.initialize();
     await AdMob.addListener(InterstitialAdPluginEvents.Closed, () => {
