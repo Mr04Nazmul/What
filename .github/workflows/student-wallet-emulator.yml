@@ -33,6 +33,7 @@ jobs:
           npx cap add android
           npm run ads:bundle
           node prepare-ads.cjs
+          npx cap sync android
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
