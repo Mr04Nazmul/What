@@ -5,7 +5,8 @@
   "scripts": {
     "android:init": "npx cap add android",
     "android:sync": "npx cap sync android",
-    "ads:bundle": "esbuild admob-entry.js --bundle --format=iife --platform=browser --target=es2020 --outfile=www/admob.js"
+    "ads:bundle": "esbuild admob-entry.js --bundle --format=iife --platform=browser --target=es2020 --define:__WALLET_PRODUCTION__=false --outfile=www/admob.js",
+    "ads:bundle:release": "esbuild admob-entry.js --bundle --format=iife --platform=browser --target=es2020 --define:__WALLET_PRODUCTION__=true --outfile=www/admob.js"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.0",
