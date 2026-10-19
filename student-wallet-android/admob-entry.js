@@ -5,7 +5,7 @@
 // App Open:     ca-app-pub-3728341118830943/8989762173
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
-import { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents, AppOpenAdPluginEvents } from '@capacitor-community/admob';
+import { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents } from '@capacitor-community/admob';
 
 const DEMO_INTERSTITIAL = 'ca-app-pub-3940256099942544/1033173712';
 const DEMO_APP_OPEN = 'ca-app-pub-3940256099942544/9257395921';
@@ -88,14 +88,14 @@ async function initAds() {
       adShowing = false; console.warn('[Wallet AdMob] Interstitial show error', error);
     });
     await AdMob.addListener(InterstitialAdPluginEvents.FailedToLoad, error => console.warn('[Wallet AdMob] Interstitial load error', error));
-    await AdMob.addListener(AppOpenAdPluginEvents.Closed, () => {
+    await AdMob.addListener('appOpenAdClosed', () => {
       adShowing = false;
       loadAppOpen();
     });
-    await AdMob.addListener(AppOpenAdPluginEvents.FailedToShow, error => {
+    await AdMob.addListener('appOpenAdFailedToShow', error => {
       adShowing = false; console.warn('[Wallet AdMob] App Open show error', error);
     });
-    await AdMob.addListener(AppOpenAdPluginEvents.FailedToLoad, error => console.warn('[Wallet AdMob] App Open load error', error));
+    await AdMob.addListener('appOpenAdFailedToLoad', error => console.warn('[Wallet AdMob] App Open load error', error));
     await loadInterstitial();
     await loadAppOpen();
     // App Open belongs at app load / foreground return, not each tab click.
