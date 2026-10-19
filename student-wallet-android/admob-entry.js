@@ -10,7 +10,7 @@ import { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents } from '@capacito
 
 const DEMO_INTERSTITIAL = 'ca-app-pub-3940256099942544/1033173712';
 const DEMO_APP_OPEN = 'ca-app-pub-3940256099942544/9257395921';
-const USE_DEMO = true; // Do not disable for emulator, debug builds, or automated testing.
+const USE_DEMO = !__WALLET_PRODUCTION__; // Selected at bundle-time: debug=test, release=production.
 const MIN_AD_GAP_MS = USE_DEMO ? 0 : 180000;
 const INTERSTITIAL_ID = USE_DEMO ? DEMO_INTERSTITIAL : 'ca-app-pub-3728341118830943/1198902066';
 const APP_OPEN_ID = USE_DEMO ? DEMO_APP_OPEN : 'ca-app-pub-3728341118830943/8989762173';
