@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - '.github/workflows/student-wallet-play-release.yml'
+      - 'student-wallet/**'
+      - 'student-wallet-android/**'
 permissions:
   contents: read
 jobs:
