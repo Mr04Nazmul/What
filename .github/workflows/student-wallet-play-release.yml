@@ -17,6 +17,7 @@ jobs:
       STORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_STORE_PASSWORD }}
       KEY_ALIAS: ${{ secrets.PLAY_UPLOAD_KEY_ALIAS }}
       KEY_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEY_PASSWORD }}
+      PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -78,3 +79,12 @@ jobs:
           name: Student-Wallet-Pro-SIGNED-Play-AAB
           path: ${{ runner.temp }}/student-wallet-signed.aab
           if-no-files-found: error
+      - name: Upload signed AAB to Google Play internal testing (manual runs only)
+        if: ${{ github.event_name == 'workflow_dispatch' && env.PLAY_SERVICE_ACCOUNT_JSON != '' && env.KEYSTORE_BASE64 != '' && env.STORE_PASSWORD != '' && env.KEY_ALIAS != '' && env.KEY_PASSWORD != '' }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.studentwallet.pro
+          releaseFiles: ${{ runner.temp }}/student-wallet-signed.aab
+          track: internal
+          status: draft
